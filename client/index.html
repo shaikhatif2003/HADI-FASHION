@@ -20,9 +20,9 @@
         <li id="profile-link" style="display:none;"><a href="profile.html">Profile</a></li>
       </ul>
       <div class="icons">
-        <div class="icon" onclick="window.location.href='shop.html'">Love</div>
+        <div class="icon" onclick="window.location.href='shop.html'">♥</div>
         <div class="icon" id="cart-icon" onclick="window.location.href='cart.html'">
-          Cart <span id="cart-count" class="cart-count">0</span>
+          🛒 <span id="cart-count" class="cart-count">0</span>
         </div>
       </div>
     </nav>
@@ -43,11 +43,31 @@
 
   <section class="section">
     <h2 class="section-title">Shop by Category</h2>
-    <div style="display:flex; justify-content:center; gap:2rem; flex-wrap:wrap;">
-      <a href="shop.html?category=shirts" style="text-decoration:none;"><div style="padding:2rem; background:white; border-radius:20px; box-shadow:var(--shadow); text-align:center; min-width:150px; cursor:pointer; transition:all 0.3s ease;">Shirts</div></a>
-      <a href="shop.html?category=jeans" style="text-decoration:none;"><div style="padding:2rem; background:white; border-radius:20px; box-shadow:var(--shadow); text-align:center; min-width:150px; cursor:pointer;">Jeans</div></a>
-      <a href="shop.html?category=t-shirts" style="text-decoration:none;"><div style="padding:2rem; background:white; border-radius:20px; box-shadow:var(--shadow); text-align:center; min-width:150px; cursor:pointer;">T-Shirts</div></a>
-      <a href="shop.html?category=trousers" style="text-decoration:none;"><div style="padding:2rem; background:white; border-radius:20px; box-shadow:var(--shadow); text-align:center; min-width:150px; cursor:pointer;">Trousers</div></a>
+    <div class="category-grid">
+      <a href="shop.html?category=shirts" class="category-card">
+        <div class="category-image" style="background-image: url('https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?q=80&w=2070&auto=format&fit=crop');"></div>
+        <div class="category-content">
+          <h3>Shirts</h3>
+        </div>
+      </a>
+      <a href="shop.html?category=jeans" class="category-card">
+        <div class="category-image" style="background-image: url('https://images.unsplash.com/photo-1542272604-787c3835535d?q=80&w=1926&auto=format&fit=crop');"></div>
+        <div class="category-content">
+          <h3>Jeans</h3>
+        </div>
+      </a>
+      <a href="shop.html?category=t-shirts" class="category-card">
+        <div class="category-image" style="background-image: url('https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=2080&auto=format&fit=crop');"></div>
+        <div class="category-content">
+          <h3>T-Shirts</h3>
+        </div>
+      </a>
+      <a href="shop.html?category=trousers" class="category-card">
+        <div class="category-image" style="background-image: url('https://images.unsplash.com/photo-1594938298603-c8148c4dae35?q=80&w=1780&auto=format&fit=crop');"></div>
+        <div class="category-content">
+          <h3>Trousers</h3>
+        </div>
+      </a>
     </div>
   </section>
 
