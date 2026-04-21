@@ -1803,10 +1803,9 @@ header {
   .filter-selectors {
     grid-template-columns: 1fr;
   }
-
+}
 
 /* ========== Home Page ========== */
-
 /* Hero Slider */
 .hero-slider-section {
   position: relative;
