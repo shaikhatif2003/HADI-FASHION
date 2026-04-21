@@ -1,4 +1,8 @@
 const admin = require('firebase-admin');
+const { getFirestore } = require('firebase-admin/firestore');
+
+const fs = require('fs');
+const path = require('path');
 
 const getServiceAccount = () => {
   const projectId = process.env.FIREBASE_PROJECT_ID;
@@ -22,8 +26,14 @@ const getServiceAccount = () => {
     }
   }
 
+  // Fallback to local file if it exists
+  const localKeyPath = path.join(__dirname, 'firebaseAdmin.json');
+  if (fs.existsSync(localKeyPath)) {
+    return require(localKeyPath);
+  }
+
   throw new Error(
-    'Firebase Admin is not configured. Add FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY to server/.env.'
+    'Firebase Admin is not configured. Add FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY to server/.env or place firebaseAdmin.json in the server directory.'
   );
 };
 
@@ -33,7 +43,11 @@ if (!admin.apps.length) {
   });
 }
 
-const db = admin.firestore();
+// Support custom database IDs (like 'bcanotesx')
+const db = process.env.FIREBASE_DATABASE_ID 
+  ? getFirestore(process.env.FIREBASE_DATABASE_ID) 
+  : getFirestore();
+
 const auth = admin.auth();
 const { FieldValue, Timestamp } = admin.firestore;
 

@@ -1,14 +1,14 @@
 let firebaseReady = false;
 
-const firebaseConfig = {
-  apiKey: 'AIzaSyDzLRZyfMweM56D4tcxFUMciu-NE4lTXbM',
-  authDomain: 'hadi-fashion.firebaseapp.com',
-  projectId: 'hadi-fashion',
-  storageBucket: 'hadi-fashion.firebasestorage.app',
-  messagingSenderId: '865463449167',
-  appId: '1:865463449167:web:33fbeec903e45a08469c3a',
-  measurementId: 'G-QJBDY4X4YB'
-};
+  const firebaseConfig = {
+    apiKey: "AIzaSyCigBtLmEYpbDOKgKQ7n3HwCImHGIkz2Ig",
+    authDomain: "bcanotes-ecbac.firebaseapp.com",
+    projectId: "bcanotes-ecbac",
+    storageBucket: "bcanotes-ecbac.firebasestorage.app",
+    messagingSenderId: "329332716671",
+    appId: "1:329332716671:web:3294c49b8743dcb0487b4a",
+    measurementId: "G-7YTCMT1LCR"
+  };
 
 if (window.firebase && !window.firebase.apps.length) {
   window.firebase.initializeApp(firebaseConfig);
