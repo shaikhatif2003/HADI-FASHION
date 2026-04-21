@@ -22,12 +22,13 @@ const hideLoading = () => {
 const apiCall = async (endpoint, options = {}, config = {}, retryCount = 0) => {
   showLoading();
   try {
+    const { headers: optHeaders, ...restOptions } = options;
     const res = await fetch(`${API_BASE}${endpoint}`, {
+      ...restOptions,
       headers: {
         'Content-Type': 'application/json',
-        ...options.headers
-      },
-      ...options
+        ...optHeaders
+      }
     });
     hideLoading();
     

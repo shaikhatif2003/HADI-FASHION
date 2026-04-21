@@ -53,7 +53,18 @@ router.get('/', auth, async (req, res) => {
 // Add to cart
 router.post('/', auth, async (req, res) => {
   try {
+    console.log('POST /api/cart', { body: req.body, userId: req.userId });
     const { productId, quantity = 1, size } = req.body;
+    if (!productId) {
+      console.warn('Missing productId in cart post', {
+        headers: req.headers,
+        method: req.method,
+        body: req.body,
+        url: req.originalUrl
+      });
+      return res.status(400).json({ msg: 'Product ID is required' });
+    }
+
     const cartCollection = db.collection('users').doc(req.userId).collection('cartItems');
     const existingSnapshot = await cartCollection
       .where('productId', '==', productId)

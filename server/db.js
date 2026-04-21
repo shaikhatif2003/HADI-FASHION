@@ -48,6 +48,8 @@ const db = process.env.FIREBASE_DATABASE_ID
   ? getFirestore(process.env.FIREBASE_DATABASE_ID) 
   : getFirestore();
 
+db.settings({ ignoreUndefinedProperties: true });
+
 const auth = admin.auth();
 const { FieldValue, Timestamp } = admin.firestore;
 
@@ -66,7 +68,7 @@ const ensureArray = (value) => (Array.isArray(value) ? value : []);
 
 const mapProductDoc = (doc) => {
   const row = typeof doc.data === 'function' ? doc.data() : doc;
-  const id = typeof doc.id === 'string' ? doc.id : row.id;
+  const id = (typeof doc.id === 'string' ? doc.id : row.id || row._id || null);
 
   return {
     id,

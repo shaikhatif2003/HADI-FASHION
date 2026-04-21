@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Product - HADI Fashion</title>
   <link rel="stylesheet" href="css/style.css">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css" rel="stylesheet">
 </head>
 <body>
   <header>
@@ -18,9 +19,9 @@
         <li id="profile-link" style="display:none;"><a href="profile.html">Profile</a></li>
       </ul>
       <div class="icons">
-        <div class="icon">♥</div>
+        <div class="icon"><i class="ri-heart-line"></i></div>
         <div class="icon" onclick="window.location.href='cart.html'">
-          🛒 <span id="cart-count" class="cart-count">0</span>
+          <i class="ri-shopping-bag-line"></i> <span id="cart-count" class="cart-count">0</span>
         </div>
       </div>
     </nav>
@@ -123,10 +124,19 @@
     };
 
     window.addToCart = async () => {
-      if (!selectedSize) return alert('Please select a size');
+      const urlParams = new URLSearchParams(window.location.search);
+      const productId = currentProduct.id ?? currentProduct._id ?? urlParams.get('id');
+
+      if (!productId) {
+        return alert('Could not identify product. Please refresh the page and try again.');
+      }
+      if (!selectedSize) {
+        return alert('Please select a size');
+      }
+
       if (!HADI.getUser()) {
         const localCart = JSON.parse(localStorage.getItem('cart') || '[]');
-        const existingItem = localCart.find(item => (item.productId?.id ?? item.productId?._id) === (currentProduct.id ?? currentProduct._id) && item.size === selectedSize);
+        const existingItem = localCart.find(item => (item.productId?.id ?? item.productId?._id) === productId && item.size === selectedSize);
 
         if (existingItem) {
           existingItem.quantity += 1;
@@ -136,7 +146,7 @@
             _id: `local-${Date.now()}`,
             quantity: 1,
             size: selectedSize,
-            productId: currentProduct
+            productId: currentProduct.id ? currentProduct : { ...currentProduct, id: productId, _id: productId }
           });
         }
 
@@ -149,7 +159,7 @@
       await HADI.apiCall('/cart', {
         method: 'POST',
         headers: { 'x-auth-token': HADI.getToken() },
-        body: JSON.stringify({ productId: currentProduct.id ?? currentProduct._id, size: selectedSize })
+        body: JSON.stringify({ productId, size: selectedSize })
       });
       HADI.updateCartCount();
       alert('Added to cart!');

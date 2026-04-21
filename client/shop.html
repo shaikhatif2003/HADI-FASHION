@@ -3,63 +3,99 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shop - HADI Fashion</title>
+  <title>Shop Collection - HADI Fashion</title>
+  <meta name="description" content="Explore our complete collection of premium men's clothing at HADI Fashion.">
   <link rel="stylesheet" href="css/style.css">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css" rel="stylesheet">
 </head>
 <body>
-  <!-- Header same as index -->
+  <div id="loading" class="loading" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); z-index:9999;"></div>
+
   <header>
-    <!-- Copy header from index.html -->
     <nav class="nav-container">
       <a href="index.html" class="logo">HADI Fashion</a>
       <ul class="nav-links">
         <li><a href="index.html">Home</a></li>
-        <li><a href="shop.html">Shop</a></li>
+        <li><a href="shop.html" class="nav-active">Shop</a></li>
         <li><a href="cart.html">Cart</a></li>
         <li id="auth-link"><a href="login.html">Login</a></li>
         <li id="profile-link" style="display:none;"><a href="profile.html">Profile</a></li>
       </ul>
       <div class="icons">
-        <div class="icon">♥</div>
+        <div class="icon"><i class="ri-heart-line"></i></div>
         <div class="icon" onclick="window.location.href='cart.html'">
-          🛒 <span id="cart-count" class="cart-count">0</span>
+          <i class="ri-shopping-bag-line"></i> <span id="cart-count" class="cart-count">0</span>
         </div>
       </div>
     </nav>
   </header>
 
-  <section class="section">
-    <h2 class="section-title">Shop All Products</h2>
-    
-    <!-- Filters -->
-    <div class="shop-filters">
-      <div class="filter-group">
-        <input type="text" id="search-input" placeholder="Search products..." oninput="filterProducts()">
-      </div>
-      <div class="filter-group">
-        <select id="category-filter" onchange="filterProducts()">
-          <option value="">All Categories</option>
-          <option value="shirts">Shirts</option>
-          <option value="jeans">Jeans</option>
-          <option value="t-shirts">T-Shirts</option>
-          <option value="trousers">Trousers</option>
-          <option value="lowers">Lowers</option>
-          <option value="night suits">Night Suits</option>
-        </select>
-      </div>
-      <div class="filter-group">
-        <select id="sort-filter" onchange="filterProducts()">
-          <option value="">Default</option>
-          <option value="price_low">Price Low to High</option>
-          <option value="-price">Price High to Low</option>
-        </select>
+  <!-- Shop Hero -->
+  <section class="shop-hero">
+    <div class="shop-hero-bg"></div>
+    <div class="shop-hero-content">
+      <h1>Discover the Collection</h1>
+      <p>Premium men's clothing crafted for the modern gentleman.</p>
+    </div>
+  </section>
+
+  <section class="shop-content-section">
+    <!-- Premium Filters Bar -->
+    <div class="shop-filters-bar">
+      <div class="filters-container">
+        
+        <div class="filter-search">
+          <i class="ri-search-line"></i>
+          <input type="text" id="search-input" placeholder="Search products..." oninput="filterProducts()">
+        </div>
+
+        <div class="filter-selectors">
+          <div class="filter-select-wrapper">
+            <i class="ri-menu-2-line select-icon"></i>
+            <select id="category-filter" onchange="filterProducts()">
+              <option value="">All Categories</option>
+              <option value="shirts">Shirts</option>
+              <option value="jeans">Jeans</option>
+              <option value="t-shirts">T-Shirts</option>
+              <option value="trousers">Trousers</option>
+              <option value="lowers">Lowers</option>
+              <option value="night suits">Night Suits</option>
+            </select>
+            <i class="ri-arrow-down-s-line arrow-icon"></i>
+          </div>
+
+          <div class="filter-select-wrapper">
+            <i class="ri-sort-desc select-icon"></i>
+            <select id="sort-filter" onchange="filterProducts()">
+              <option value="">Sort: Default</option>
+              <option value="price_low">Price: Low to High</option>
+              <option value="-price">Price: High to Low</option>
+            </select>
+            <i class="ri-arrow-down-s-line arrow-icon"></i>
+          </div>
+        </div>
+        
       </div>
     </div>
 
+    <!-- Products Grid -->
     <div class="products-grid" id="shop-products">
-      <!-- Dynamic products -->
+      <!-- Loading Skeleton will be inserted here by default -->
+    </div>
+    
+    <!-- Empty State (hidden by default) -->
+    <div id="shop-empty-state" class="shop-empty-state" style="display:none;">
+      <i class="ri-search-eye-line"></i>
+      <h3>No products found</h3>
+      <p>We couldn't find any products matching your filters.</p>
+      <button class="btn" onclick="clearFilters()">Clear Filters</button>
     </div>
   </section>
+
+  <!-- Footer -->
+  <footer class="cart-footer">
+    <p>&copy; 2026 HADI Fashion. All rights reserved.</p>
+  </footer>
 
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
@@ -68,29 +104,74 @@
   <script src="js/main.js"></script>
   <script>
     let allProducts = [];
+    let isInitialLoad = true;
     const container = document.getElementById('shop-products');
+    const emptyState = document.getElementById('shop-empty-state');
+
+    const showSkeletons = () => {
+      container.innerHTML = Array(8).fill(0).map(() => `
+        <div class="product-card skeleton-card">
+          <div class="product-image skeleton-img"></div>
+          <div class="product-info">
+            <div class="skeleton-text" style="width:70%; height:20px; margin-bottom:10px;"></div>
+            <div class="skeleton-text" style="width:40%; height:15px; margin-bottom:15px;"></div>
+            <div class="skeleton-text" style="width:30%; height:24px;"></div>
+          </div>
+        </div>
+      `).join('');
+    };
 
     const filterProducts = async () => {
+      if (isInitialLoad) {
+        showSkeletons();
+      }
+      
       const category = document.getElementById('category-filter').value;
       const search = document.getElementById('search-input').value;
       const sort = document.getElementById('sort-filter').value;
       
-      const params = new URLSearchParams({ category, search, sort });
-      allProducts = await HADI.apiCall(`/products?${params}`);
+      const params = new URLSearchParams();
+      if (category) params.append('category', category);
+      if (search) params.append('search', search);
+      if (sort) params.append('sort', sort);
+      
+      const queryString = params.toString();
+      allProducts = await HADI.apiCall(`/products${queryString ? '?' + queryString : ''}`);
+      
+      // Update URL silently
+      const newUrl = window.location.pathname + (queryString ? '?' + queryString : '');
+      window.history.replaceState({}, '', newUrl);
+      
       renderFiltered();
+      isInitialLoad = false;
     };
 
     const renderFiltered = () => {
-      HADI.renderProducts(allProducts || [], container);
+      if (!allProducts || allProducts.length === 0) {
+        container.style.display = 'none';
+        emptyState.style.display = 'flex';
+      } else {
+        container.style.display = 'grid';
+        emptyState.style.display = 'none';
+        HADI.renderProducts(allProducts, container);
+      }
+    };
+
+    window.clearFilters = () => {
+      document.getElementById('category-filter').value = '';
+      document.getElementById('search-input').value = '';
+      document.getElementById('sort-filter').value = '';
+      filterProducts();
     };
 
     window.addEventListener('load', async () => {
       await HADI.waitForAuth();
+      
       // Parse URL params for initial filter
       const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.get('category')) {
-        document.getElementById('category-filter').value = urlParams.get('category');
-      }
+      if (urlParams.get('category')) document.getElementById('category-filter').value = urlParams.get('category');
+      if (urlParams.get('search')) document.getElementById('search-input').value = urlParams.get('search');
+      if (urlParams.get('sort')) document.getElementById('sort-filter').value = urlParams.get('sort');
       
       await filterProducts();
       HADI.updateCartCount();
@@ -104,4 +185,3 @@
   </script>
 </body>
 </html>
-
