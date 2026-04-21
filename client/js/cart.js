@@ -15,7 +15,11 @@ const loadCart = async () => {
   const container = document.getElementById('cart-items');
   container.innerHTML = cart.items.map(item => `
     <div class="cart-item">
-      <div class="cart-item-image">${item.productId?.name?.[0] || 'P'}</div>
+      <div class="cart-item-image">
+        ${item.productId?.images && item.productId.images.length > 0
+          ? `<img src="${item.productId.images[0]}" alt="${item.productId.name}" style="width:100%; height:100%; object-fit:cover; border-radius:15px;">`
+          : (item.productId?.name?.[0] || 'P')}
+      </div>
       <div style="flex:1;">
         <h3>${item.productId?.name || 'Product'}</h3>
         <p>Size: ${item.size || 'N/A'} | $${item.productId?.price || 0}</p>

@@ -166,7 +166,11 @@ const initFirebaseAuthSync = () => {
 const renderProducts = (products, container) => {
   container.innerHTML = products.map(p => `
     <div class="product-card" onclick="HADI.goToProduct('${p.id ?? p._id}')">
-      <div class="product-image">${p.category.charAt(0).toUpperCase()}</div>
+      <div class="product-image">
+        ${p.images && p.images.length > 0 
+          ? `<img src="${p.images[0]}" alt="${p.name}" style="width:100%; height:100%; object-fit:cover;">`
+          : p.category.charAt(0).toUpperCase()}
+      </div>
       <div class="product-info">
         <div class="product-category">${p.category}</div>
         <div class="product-name">${p.name}</div>
