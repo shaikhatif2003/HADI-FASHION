@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - HADI Fashion</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header><!-- Header --></header>
+
+  <section class="section">
+    <h2 class="section-title">Admin Panel - Products</h2>
+    <div class="admin-form">
+      <h3>Add Product</h3>
+      <form id="add-product-form">
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" id="p-name" required>
+        </div>
+        <div class="form-group">
+          <label>Price</label>
+          <input type="number" id="p-price" step="0.01" required>
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="p-category">
+            <option value="shirts">Shirts</option>
+            <option value="jeans">Jeans</option>
+            <option value="t-shirts">T-Shirts</option>
+            <option value="trousers">Trousers</option>
+            <option value="lowers">Lowers</option>
+            <option value="night suits">Night Suits</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Sizes (comma separated)</label>
+          <input type="text" id="p-sizes" placeholder="S,M,L,XL">
+        </div>
+        <button type="submit" class="btn">Add Product</button>
+      </form>
+
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Category</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="admin-products">
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-analytics-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    document.getElementById('add-product-form').onsubmit = async (e) => {
+      e.preventDefault();
+      await HADI.apiCall('/products', {
+        method: 'POST',
+        headers: { 'x-auth-token': HADI.getToken() },
+        body: JSON.stringify({
+          name: document.getElementById('p-name').value,
+          price: parseFloat(document.getElementById('p-price').value),
+          category: document.getElementById('p-category').value,
+          sizes: document.getElementById('p-sizes').value.split(',')
+        })
+      });
+      loadAdminProducts();
+      e.target.reset();
+    };
+
+    const loadAdminProducts = async () => {
+      const products = await HADI.apiCall('/products');
+      const tbody = document.getElementById('admin-products');
+      tbody.innerHTML = products.map(p => `
+        <tr>
+          <td>${p.name}</td>
+          <td>$${p.price}</td>
+          <td>${p.category}</td>
+          <td>
+            <button class="btn" onclick="deleteProduct('${p.id ?? p._id}')">Delete</button>
+          </td>
+        </tr>
+      `).join('');
+    };
+
+    window.deleteProduct = async (id) => {
+      if (confirm('Delete product?')) {
+        await HADI.apiCall(`/products/${id}`, { method: 'DELETE', headers: { 'x-auth-token': HADI.getToken() } });
+        loadAdminProducts();
+      }
+    };
+
+    window.addEventListener('load', async () => {
+      await HADI.waitForAuth();
+      if (!HADI.getUser()) window.location.href = 'login.html';
+      loadAdminProducts();
+    });
+  </script>
+</body>
+</html>
+

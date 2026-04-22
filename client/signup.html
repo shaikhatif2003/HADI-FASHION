@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up - HADI Fashion</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header><!-- Header --></header>
+
+  <form id="signup-form" class="login-form">
+    <h2>Create Account</h2>
+    <div class="form-group">
+      <label>Name</label>
+      <input type="text" id="signup-name" required>
+    </div>
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="signup-email" required>
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="signup-password" required>
+    </div>
+    <button type="submit" class="btn" style="width:100%;">Sign Up</button>
+    <p style="text-align:center; margin-top:1rem;">Have account? <a href="login.html">Login</a></p>
+  </form>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-analytics-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>
+

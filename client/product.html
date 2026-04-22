@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product - HADI Fashion</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <nav class="nav-container">
+      <a href="index.html" class="logo">HADI Fashion</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="shop.html">Shop</a></li>
+        <li><a href="cart.html">Cart</a></li>
+        <li id="auth-link"><a href="login.html">Login</a></li>
+        <li id="profile-link" style="display:none;"><a href="profile.html">Profile</a></li>
+      </ul>
+      <div class="icons">
+        <div class="icon">♥</div>
+        <div class="icon" onclick="window.location.href='cart.html'">
+          🛒 <span id="cart-count" class="cart-count">0</span>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <section class="product-detail">
+    <div class="detail-images">
+      <div class="main-image" id="main-image">S</div>
+      <div class="thumbs">
+        <div class="thumb active" onclick="changeImage(0)">1</div>
+        <div class="thumb" onclick="changeImage(1)">2</div>
+        <div class="thumb" onclick="changeImage(2)">3</div>
+      </div>
+    </div>
+    <div class="detail-info">
+      <h1 id="product-name">Product Name</h1>
+      <div class="detail-price" id="product-price">$0</div>
+      <p id="product-desc">Description</p>
+      <div>
+        <label>Sizes:</label>
+        <div class="sizes" id="sizes"></div>
+      </div>
+      <button class="btn add-cart" onclick="addToCart()">Add to Cart</button>
+      
+      <!-- Reviews -->
+      <div class="reviews">
+        <h3>Reviews</h3>
+        <div id="reviews-list"></div>
+        <div class="form-group">
+          <input type="number" id="rating" min="1" max="5" placeholder="Rating (1-5)">
+          <textarea id="review-text" placeholder="Write a review..."></textarea>
+          <button class="btn" onclick="addReview()">Submit Review</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-analytics-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    let currentProduct = {};
+    let selectedSize = '';
+
+    window.viewProduct = async (id) => {
+      currentProduct = await HADI.apiCall(`/products/${id}`);
+      renderProduct();
+    };
+
+    const renderProduct = () => {
+      if (!currentProduct) return;
+      
+      document.getElementById('product-name').textContent = currentProduct.name;
+      document.getElementById('product-price').textContent = `$${currentProduct.price}`;
+      document.getElementById('product-desc').textContent = currentProduct.description;
+      
+      // Sizes
+      const sizesEl = document.getElementById('sizes');
+      sizesEl.innerHTML = currentProduct.sizes?.map(size => 
+        `<div class="size-btn ${size === selectedSize ? 'active' : ''}" onclick="selectSize('${size}')">${size}</div>`
+      ).join('') || '<p>No sizes available</p>';
+      
+      // Reviews
+      const reviewsEl = document.getElementById('reviews-list');
+      reviewsEl.innerHTML = currentProduct.reviews?.map(r => `
+        <div class="review">
+          <div class="stars">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+          <p>${r.comment}</p>
+        </div>
+      `).join('') || '<p>No reviews yet</p>';
+    };
+
+    const selectSize = (size) => {
+      selectedSize = size;
+      document.querySelectorAll('.size-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+    };
+
+    window.addToCart = async () => {
+      if (!selectedSize) return alert('Please select a size');
+      if (!HADI.getUser()) {
+        const localCart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const existingItem = localCart.find(item => (item.productId?.id ?? item.productId?._id) === (currentProduct.id ?? currentProduct._id) && item.size === selectedSize);
+
+        if (existingItem) {
+          existingItem.quantity += 1;
+        } else {
+          localCart.push({
+            id: `local-${Date.now()}`,
+            _id: `local-${Date.now()}`,
+            quantity: 1,
+            size: selectedSize,
+            productId: currentProduct
+          });
+        }
+
+        localStorage.setItem('cart', JSON.stringify(localCart));
+        HADI.updateCartCount();
+        alert('Added to cart!');
+        return;
+      }
+      
+      await HADI.apiCall('/cart', {
+        method: 'POST',
+        headers: { 'x-auth-token': HADI.getToken() },
+        body: JSON.stringify({ productId: currentProduct.id ?? currentProduct._id, size: selectedSize })
+      });
+      HADI.updateCartCount();
+      alert('Added to cart!');
+    };
+
+    window.changeImage = (index) => {
+      document.querySelectorAll('.thumb').forEach((t, i) => t.classList.toggle('active', i === index));
+      document.getElementById('main-image').textContent = String.fromCharCode(65 + index);
+    };
+
+    window.addReview = () => {
+      // Mock - in real, POST to /products/:id/reviews
+      alert('Review added (mock)');
+    };
+
+    window.addEventListener('load', async () => {
+      await HADI.waitForAuth();
+      // Get product ID from URL
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('id')) {
+        viewProduct(urlParams.get('id'));
+      }
+      HADI.updateCartCount();
+      
+      const user = HADI.getUser();
+      if (user) {
+        document.getElementById('auth-link').style.display = 'none';
+        document.getElementById('profile-link').style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>
+

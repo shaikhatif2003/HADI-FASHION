@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop - HADI Fashion</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Header same as index -->
+  <header>
+    <!-- Copy header from index.html -->
+    <nav class="nav-container">
+      <a href="index.html" class="logo">HADI Fashion</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="shop.html">Shop</a></li>
+        <li><a href="cart.html">Cart</a></li>
+        <li id="auth-link"><a href="login.html">Login</a></li>
+        <li id="profile-link" style="display:none;"><a href="profile.html">Profile</a></li>
+      </ul>
+      <div class="icons">
+        <div class="icon">♥</div>
+        <div class="icon" onclick="window.location.href='cart.html'">
+          🛒 <span id="cart-count" class="cart-count">0</span>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <section class="section">
+    <h2 class="section-title">Shop All Products</h2>
+    
+    <!-- Filters -->
+    <div class="shop-filters">
+      <div class="filter-group">
+        <input type="text" id="search-input" placeholder="Search products..." oninput="filterProducts()">
+      </div>
+      <div class="filter-group">
+        <select id="category-filter" onchange="filterProducts()">
+          <option value="">All Categories</option>
+          <option value="shirts">Shirts</option>
+          <option value="jeans">Jeans</option>
+          <option value="t-shirts">T-Shirts</option>
+          <option value="trousers">Trousers</option>
+          <option value="lowers">Lowers</option>
+          <option value="night suits">Night Suits</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <select id="sort-filter" onchange="filterProducts()">
+          <option value="">Default</option>
+          <option value="price_low">Price Low to High</option>
+          <option value="-price">Price High to Low</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="products-grid" id="shop-products">
+      <!-- Dynamic products -->
+    </div>
+  </section>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-analytics-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    let allProducts = [];
+    const container = document.getElementById('shop-products');
+
+    const filterProducts = async () => {
+      const category = document.getElementById('category-filter').value;
+      const search = document.getElementById('search-input').value;
+      const sort = document.getElementById('sort-filter').value;
+      
+      const params = new URLSearchParams({ category, search, sort });
+      allProducts = await HADI.apiCall(`/products?${params}`);
+      renderFiltered();
+    };
+
+    const renderFiltered = () => {
+      HADI.renderProducts(allProducts || [], container);
+    };
+
+    window.addEventListener('load', async () => {
+      await HADI.waitForAuth();
+      // Parse URL params for initial filter
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('category')) {
+        document.getElementById('category-filter').value = urlParams.get('category');
+      }
+      
+      await filterProducts();
+      HADI.updateCartCount();
+      
+      const user = HADI.getUser();
+      if (user) {
+        document.getElementById('auth-link').style.display = 'none';
+        document.getElementById('profile-link').style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>
+
