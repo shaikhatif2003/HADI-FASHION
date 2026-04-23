@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HADI Fashion - Premium Mens Clothing</title>
   <link rel="stylesheet" href="css/style.css">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css" rel="stylesheet">
 </head>
 <body>
   <div id="loading" class="loading" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); z-index:9999;"></div>
@@ -20,36 +21,145 @@
         <li id="profile-link" style="display:none;"><a href="profile.html">Profile</a></li>
       </ul>
       <div class="icons">
-        <div class="icon" onclick="window.location.href='shop.html'">Love</div>
+        <div class="icon" onclick="window.location.href='shop.html'"><i class="ri-heart-line"></i></div>
         <div class="icon" id="cart-icon" onclick="window.location.href='cart.html'">
-          Cart <span id="cart-count" class="cart-count">0</span>
+          <i class="ri-shopping-bag-line"></i> <span id="cart-count" class="cart-count">0</span>
         </div>
       </div>
     </nav>
   </header>
 
-  <section class="hero">
-    <div class="hero-content">
-      <h1>Style for Every Man</h1>
-      <p>Premium Quality Mens Fashion at Affordable Prices</p>
-      <a href="shop.html" class="btn">Shop Now</a>
+  <!-- Hero Slider -->
+  <section class="hero-slider-section">
+    <div class="hero-slider" id="heroSlider">
+      
+      <!-- Slide 1 -->
+      <div class="slide active">
+        <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1516257984-b1b4d707412e?q=80&w=2000&auto=format&fit=crop');"></div>
+        <div class="slide-content">
+          <span class="slide-subtitle">New Collection 2026</span>
+          <h2>Style for Every Man</h2>
+          <p>Premium Quality Mens Fashion at Affordable Prices.</p>
+          <a href="shop.html" class="btn slide-btn">Shop Now <i class="ri-arrow-right-line"></i></a>
+        </div>
+      </div>
+      
+      <!-- Slide 2 -->
+      <div class="slide">
+        <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1542272604-787c3835535d?q=80&w=2000&auto=format&fit=crop');"></div>
+        <div class="slide-content">
+          <span class="slide-subtitle">Denim Essentials</span>
+          <h2>The Perfect Fit</h2>
+          <p>Discover our range of premium comfort denim.</p>
+          <a href="shop.html?category=jeans" class="btn slide-btn">Shop Denim <i class="ri-arrow-right-line"></i></a>
+        </div>
+      </div>
+      
+      <!-- Slide 3 -->
+      <div class="slide">
+        <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?q=80&w=2000&auto=format&fit=crop');"></div>
+        <div class="slide-content">
+          <span class="slide-subtitle">Summer Ready</span>
+          <h2>Elevate Your Basics</h2>
+          <p>Breathable shirts and tees for the modern gentleman.</p>
+          <a href="shop.html?category=shirts" class="btn slide-btn">Explore Shirts <i class="ri-arrow-right-line"></i></a>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <button class="slider-btn prev-btn" onclick="moveSlide(-1)"><i class="ri-arrow-left-s-line"></i></button>
+      <button class="slider-btn next-btn" onclick="moveSlide(1)"><i class="ri-arrow-right-s-line"></i></button>
+      
+      <!-- Indicators -->
+      <div class="slider-dots" id="sliderDots">
+        <span class="dot active" onclick="goToSlide(0)"></span>
+        <span class="dot" onclick="goToSlide(1)"></span>
+        <span class="dot" onclick="goToSlide(2)"></span>
+      </div>
     </div>
   </section>
 
-  <section class="section">
-    <h2 class="section-title">Featured Products</h2>
-    <div class="products-grid" id="featured-products"></div>
-  </section>
+  <!-- Trust Bar -->
+  <div class="trust-bar">
+    <div class="trust-item">
+      <i class="ri-truck-line"></i>
+      <div class="trust-text">
+        <strong>Free Shipping</strong>
+        <span>On orders over ₹500</span>
+      </div>
+    </div>
+    <div class="trust-item">
+      <i class="ri-shield-check-line"></i>
+      <div class="trust-text">
+        <strong>Secure Payment</strong>
+        <span>100% safe checkout</span>
+      </div>
+    </div>
+    <div class="trust-item">
+      <i class="ri-refresh-line"></i>
+      <div class="trust-text">
+        <strong>Easy Returns</strong>
+        <span>30-day return policy</span>
+      </div>
+    </div>
+  </div>
 
   <section class="section">
+    <h2 class="section-title">Trending Now</h2>
+    <div class="products-grid" id="featured-products">
+      <!-- Skeletons will be injected here on load -->
+    </div>
+  </section>
+
+  <section class="section section-gray">
     <h2 class="section-title">Shop by Category</h2>
-    <div style="display:flex; justify-content:center; gap:2rem; flex-wrap:wrap;">
-      <a href="shop.html?category=shirts" style="text-decoration:none;"><div style="padding:2rem; background:white; border-radius:20px; box-shadow:var(--shadow); text-align:center; min-width:150px; cursor:pointer; transition:all 0.3s ease;">Shirts</div></a>
-      <a href="shop.html?category=jeans" style="text-decoration:none;"><div style="padding:2rem; background:white; border-radius:20px; box-shadow:var(--shadow); text-align:center; min-width:150px; cursor:pointer;">Jeans</div></a>
-      <a href="shop.html?category=t-shirts" style="text-decoration:none;"><div style="padding:2rem; background:white; border-radius:20px; box-shadow:var(--shadow); text-align:center; min-width:150px; cursor:pointer;">T-Shirts</div></a>
-      <a href="shop.html?category=trousers" style="text-decoration:none;"><div style="padding:2rem; background:white; border-radius:20px; box-shadow:var(--shadow); text-align:center; min-width:150px; cursor:pointer;">Trousers</div></a>
+    
+    <div class="bento-grid">
+      <!-- Main Large Block -->
+      <a href="shop.html?category=shirts" class="bento-item bento-large">
+        <div class="bento-bg" style="background-image: url('https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?q=80&w=1200&auto=format&fit=crop');"></div>
+        <div class="bento-overlay"></div>
+        <div class="bento-content">
+          <h3>Shirts & Polos</h3>
+          <span class="bento-link">Explore Collection <i class="ri-arrow-right-line"></i></span>
+        </div>
+      </a>
+      
+      <!-- Medium Blocks -->
+      <a href="shop.html?category=jeans" class="bento-item">
+        <div class="bento-bg" style="background-image: url('https://images.unsplash.com/photo-1542272604-787c3835535d?q=80&w=800&auto=format&fit=crop');"></div>
+        <div class="bento-overlay"></div>
+        <div class="bento-content">
+          <h3>Premium Denim</h3>
+          <span class="bento-link">Shop Jeans <i class="ri-arrow-right-line"></i></span>
+        </div>
+      </a>
+      
+      <a href="shop.html?category=t-shirts" class="bento-item">
+        <div class="bento-bg" style="background-image: url('https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=800&auto=format&fit=crop');"></div>
+        <div class="bento-overlay"></div>
+        <div class="bento-content">
+          <h3>Essential Tees</h3>
+          <span class="bento-link">Shop Tees <i class="ri-arrow-right-line"></i></span>
+        </div>
+      </a>
+      
+      <!-- Wide Bottom Block -->
+      <a href="shop.html?category=night suits" class="bento-item bento-wide">
+        <div class="bento-bg" style="background-image: url('https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?q=80&w=1200&auto=format&fit=crop');"></div>
+        <div class="bento-overlay"></div>
+        <div class="bento-content">
+          <h3>Loungewear</h3>
+          <span class="bento-link">Shop Night Suits <i class="ri-arrow-right-line"></i></span>
+        </div>
+      </a>
     </div>
   </section>
+
+  <!-- Footer -->
+  <footer class="cart-footer">
+    <p>&copy; 2026 HADI Fashion. All rights reserved.</p>
+  </footer>
 
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
@@ -57,15 +167,76 @@
   <script src="js/firebase-config.js"></script>
   <script src="js/main.js"></script>
   <script>
-    window.addEventListener('load', async () => {
-      await HADI.waitForAuth();
-      const products = await HADI.apiCall('/products?page=1&limit=6');
-      HADI.renderProducts(products || [], document.getElementById('featured-products'));
+    // --- Slider Logic ---
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot');
+    let slideInterval;
 
+    const showSlide = (index) => {
+      slides.forEach(s => s.classList.remove('active'));
+      dots.forEach(d => d.classList.remove('active'));
+      
+      if (index >= slides.length) currentSlide = 0;
+      if (index < 0) currentSlide = slides.length - 1;
+      
+      slides[currentSlide].classList.add('active');
+      dots[currentSlide].classList.add('active');
+    };
+
+    window.moveSlide = (step) => {
+      currentSlide += step;
+      showSlide(currentSlide);
+      resetInterval();
+    };
+
+    window.goToSlide = (index) => {
+      currentSlide = index;
+      showSlide(currentSlide);
+      resetInterval();
+    };
+
+    const resetInterval = () => {
+      clearInterval(slideInterval);
+      slideInterval = setInterval(() => moveSlide(1), 5000);
+    };
+
+    // --- Loading Skeletons ---
+    const showSkeletons = (container) => {
+      container.innerHTML = Array(4).fill(0).map(() => `
+        <div class="product-card skeleton-card">
+          <div class="product-image skeleton-img"></div>
+          <div class="product-info">
+            <div class="skeleton-text" style="width:70%; height:20px; margin-bottom:10px;"></div>
+            <div class="skeleton-text" style="width:40%; height:15px; margin-bottom:15px;"></div>
+            <div class="skeleton-text" style="width:30%; height:24px;"></div>
+          </div>
+        </div>
+      `).join('');
+    };
+
+    window.addEventListener('load', async () => {
+      // Start Slider
+      resetInterval();
+
+      // Auth UI Setup
+      await HADI.waitForAuth();
       const user = HADI.getUser();
       if (user) {
         document.getElementById('auth-link').style.display = 'none';
         document.getElementById('profile-link').style.display = 'block';
+      }
+
+      // Fetch Featured Products with Skeleton
+      const featuredContainer = document.getElementById('featured-products');
+      showSkeletons(featuredContainer);
+      
+      const products = await HADI.apiCall('/products?page=1&limit=8');
+      
+      if (!products || products.length === 0) {
+        featuredContainer.innerHTML = '<p style="grid-column: 1/-1; text-align:center; color:var(--text-light);">No products found.</p>';
+      } else {
+        HADI.renderProducts(products, featuredContainer);
       }
 
       HADI.updateCartCount();

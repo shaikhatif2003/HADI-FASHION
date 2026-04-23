@@ -1,5 +1,17 @@
 {
-  "dependencies": {
-    "@supabase/supabase-js": "^2.103.3"
-  }
+  "name": "hadi-fashion",
+  "version": "1.0.0",
+  "description": "Full-stack HADI Fashion e-commerce platform",
+  "scripts": {
+    "install:server": "cd server && npm install",
+    "dev": "cd server && npm run dev",
+    "start": "cd server && npm start"
+  },
+  "keywords": [
+    "ecommerce",
+    "firebase",
+    "express"
+  ],
+  "author": "",
+  "license": "ISC"
 }

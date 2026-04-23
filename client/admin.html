@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin - HADI Fashion</title>
   <link rel="stylesheet" href="css/style.css">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css" rel="stylesheet">
 </head>
 <body>
   <header><!-- Header --></header>
@@ -83,7 +84,7 @@
       tbody.innerHTML = products.map(p => `
         <tr>
           <td>${p.name}</td>
-          <td>$${p.price}</td>
+          <td>₹${p.price}</td>
           <td>${p.category}</td>
           <td>
             <button class="btn" onclick="deleteProduct('${p.id ?? p._id}')">Delete</button>

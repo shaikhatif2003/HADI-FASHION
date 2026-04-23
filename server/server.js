@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const { initDb, auth: firebaseAuth } = require('./db');
 
 const app = express();
@@ -10,33 +11,21 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+// Serve static frontend files
+app.use(express.static(path.join(__dirname, '../client')));
+
 // Routes
 app.use('/api/products', require('./routes/products'));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/cart', require('./routes/cart'));
 app.use('/api/orders', require('./routes/orders'));
 
-// Test root
-app.get('/', (req, res) => res.send('HADI Fashion API running - visit /api/products'));
-
-// Debug endpoint
-app.get('/api/debug/firebase', (req, res) => {
-  try {
-    const projectId = firebaseAuth.app?.options?.projectId;
-    res.json({ 
-      firebaseConnected: !!firebaseAuth,
-      projectId,
-      timestamp: new Date().toISOString()
-    });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+// Test root - fallback to index.html for SPA-like behavior or just serve the home
+app.get('/api', (req, res) => res.send('HADI Fashion API running'));
 
 initDb()
   .then(() => {
     console.log('Firebase connected');
-    console.log('Firebase project ID:', firebaseAuth.app?.options?.projectId);
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   })
   .catch((err) => {
