@@ -66,7 +66,7 @@ const loadCart = async () => {
             <h3 class="cart-item-name">${name}</h3>
             <div class="cart-item-meta">
               ${item.size ? `<span class="cart-item-size">Size: ${item.size}</span>` : ''}
-              <span class="cart-item-unit-price">$${price.toFixed(2)} each</span>
+              <span class="cart-item-unit-price">₹${price.toFixed(2)} each</span>
             </div>
           </div>
           <button class="cart-item-remove" onclick="removeItem('${itemId}')" title="Remove item">
@@ -83,7 +83,7 @@ const loadCart = async () => {
               <i class="ri-add-line"></i>
             </button>
           </div>
-          <div class="cart-item-line-total">$${lineTotal.toFixed(2)}</div>
+          <div class="cart-item-line-total">₹${lineTotal.toFixed(2)}</div>
         </div>
       </div>
     </div>`;
@@ -91,12 +91,12 @@ const loadCart = async () => {
 
   // Calculate totals
   const subtotal = cart.items.reduce((sum, item) => sum + ((item.productId?.price || 0) * (item.quantity || 0)), 0);
-  const tax = subtotal * 0.08; // 8% estimated tax
+  const tax = subtotal * 0.18; // 18% GST
   const total = subtotal + tax;
 
-  document.getElementById('subtotal-price').textContent = `$${subtotal.toFixed(2)}`;
-  document.getElementById('tax-price').textContent = `$${tax.toFixed(2)}`;
-  document.getElementById('total-price').textContent = `$${total.toFixed(2)}`;
+  document.getElementById('subtotal-price').textContent = `₹${subtotal.toFixed(2)}`;
+  document.getElementById('tax-price').textContent = `₹${tax.toFixed(2)}`;
+  document.getElementById('total-price').textContent = `₹${total.toFixed(2)}`;
 };
 
 window.updateQty = async (itemId, currentQty, delta) => {

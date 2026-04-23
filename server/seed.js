@@ -6,7 +6,7 @@ const products = [
   {
     name: 'Premium Cotton Shirt',
     description: 'Comfort fit white cotton shirt',
-    price: 49.99,
+    price: 3999,
     discount: 20,
     category: 'shirts',
     images: ['https://files.manuscdn.com/user_upload_by_module/session_file/310519663537365120/xsoabyPiqoZEZNYx.webp'],
@@ -16,7 +16,7 @@ const products = [
   {
     name: 'Casual Linen Shirt',
     description: 'Beige breathable linen shirt',
-    price: 55.00,
+    price: 4499,
     discount: 0,
     category: 'shirts',
     images: ['https://files.manuscdn.com/user_upload_by_module/session_file/310519663537365120/DAZIIMlMTaxeoyiY.jpeg'],
@@ -26,7 +26,7 @@ const products = [
   {
     name: 'Denim Work Shirt',
     description: 'Rugged blue denim shirt',
-    price: 45.00,
+    price: 3699,
     discount: 10,
     category: 'shirts',
     images: ['https://files.manuscdn.com/user_upload_by_module/session_file/310519663537365120/lUVVXJZjAIFFAiHQ.webp'],
@@ -48,7 +48,7 @@ const products = [
   {
     name: 'Classic Graphic Tee',
     description: 'Vintage rock band graphic tee',
-    price: 29.99,
+    price: 2499,
     discount: 0,
     category: 't-shirts',
     images: ['https://files.manuscdn.com/user_upload_by_module/session_file/310519663537365120/TFFAkQtyXXWueDNQ.jpeg'],
@@ -58,7 +58,7 @@ const products = [
   {
     name: 'Oversized Plain Tee',
     description: 'Heavyweight black oversized tee',
-    price: 24.99,
+    price: 1999,
     discount: 5,
     category: 't-shirts',
     images: ['https://files.manuscdn.com/user_upload_by_module/session_file/310519663537365120/PtTYDVrIikUmgCot.jpeg'],
@@ -68,7 +68,7 @@ const products = [
   {
     name: 'Striped Polo Shirt',
     description: 'Navy and white striped polo',
-    price: 34.00,
+    price: 2799,
     discount: 15,
     category: 't-shirts',
     images: ['https://files.manuscdn.com/user_upload_by_module/session_file/310519663537365120/aVBgpSYEwcpQxJTW.jpeg'],
@@ -90,7 +90,7 @@ const products = [
   {
     name: 'Slim Fit Dark Jeans',
     description: 'Deep indigo slim fit denim',
-    price: 69.99,
+    price: 5799,
     discount: 10,
     category: 'jeans',
     images: ['https://files.manuscdn.com/user_upload_by_module/session_file/310519663537365120/DwKaQESARsPOAmiG.jpeg'],
@@ -100,7 +100,7 @@ const products = [
   {
     name: 'Relaxed Fit Light Wash',
     description: '90s style light wash jeans',
-    price: 65.00,
+    price: 5299,
     discount: 0,
     category: 'jeans',
     images: ['https://files.manuscdn.com/user_upload_by_module/session_file/310519663537365120/WAGhoODOmCBThPZy.webp'],
@@ -110,7 +110,7 @@ const products = [
   {
     name: 'Formal Chino Trousers',
     description: 'Khaki slim fit chinos',
-    price: 59.99,
+    price: 4999,
     discount: 0,
     category: 'trousers',
     images: ['https://files.manuscdn.com/user_upload_by_module/session_file/310519663537365120/N2V9RJ0pJMO6.jpeg'],
@@ -120,7 +120,7 @@ const products = [
   {
     name: 'Black Dress Pants',
     description: 'Perfect for formal occasions',
-    price: 79.99,
+    price: 6599,
     discount: 20,
     category: 'trousers',
     images: ['https://files.manuscdn.com/user_upload_by_module/session_file/310519663537365120/DwKaQESARsPOAmiG.jpeg'],
@@ -142,7 +142,7 @@ const products = [
   {
     name: 'Leather Biker Jacket',
     description: 'Genuine black leather jacket',
-    price: 199.99,
+    price: 16999,
     discount: 10,
     category: 'jackets',
     images: ['https://files.manuscdn.com/user_upload_by_module/session_file/310519663537365120/koHQLBlgiUGAlqaW.jpg'],
@@ -152,7 +152,7 @@ const products = [
   {
     name: 'Denim Trucker Jacket',
     description: 'Classic blue denim outerwear',
-    price: 89.00,
+    price: 7499,
     discount: 0,
     category: 'jackets',
     images: ['https://files.manuscdn.com/user_upload_by_module/session_file/310519663537365120/WfuihjCsiRYNMCrO.jpeg'],
@@ -162,7 +162,7 @@ const products = [
   {
     name: 'Hooded Windbreaker',
     description: 'Waterproof olive windbreaker',
-    price: 59.00,
+    price: 4999,
     discount: 15,
     category: 'jackets',
     images: ['https://files.manuscdn.com/user_upload_by_module/session_file/310519663537365120/NrIoRornApxxBgbd.jpeg'],
@@ -172,7 +172,7 @@ const products = [
   {
     name: 'Classic Grey Hoodie',
     description: 'Soft fleece-lined hoodie',
-    price: 45.00,
+    price: 3799,
     discount: 0,
     category: 'jackets',
     images: ['https://files.manuscdn.com/user_upload_by_module/session_file/310519663537365120/RJIIPdDZQpHvDMks.webp'],
@@ -184,7 +184,7 @@ const products = [
   {
     name: 'City Cargo Pants',
     description: 'Modern multi-pocket cargos',
-    price: 59.99,
+    price: 4999,
     discount: 0,
     category: 'lowers',
     images: ['https://files.manuscdn.com/user_upload_by_module/session_file/310519663537365120/tVMaSOSknlHeTcMK.jpeg'],
@@ -194,7 +194,7 @@ const products = [
   {
     name: 'Fleece Joggers',
     description: 'Comfortable grey sweatpants',
-    price: 35.00,
+    price: 2899,
     discount: 0,
     category: 'lowers',
     images: ['https://files.manuscdn.com/user_upload_by_module/session_file/310519663537365120/tVMaSOSknlHeTcMK.jpeg'],
@@ -204,7 +204,7 @@ const products = [
   {
     name: 'Checkered Night Suit',
     description: 'Flannel sleepwear set',
-    price: 39.99,
+    price: 3299,
     discount: 25,
     category: 'night suits',
     images: ['https://files.manuscdn.com/user_upload_by_module/session_file/310519663537365120/ntnmFtVhhrBgzByR.jpeg'],
@@ -214,7 +214,7 @@ const products = [
   {
     name: 'Silk Loungewear',
     description: 'Premium navy silk set',
-    price: 85.00,
+    price: 6999,
     discount: 0,
     category: 'night suits',
     images: ['https://files.manuscdn.com/user_upload_by_module/session_file/310519663537365120/DydktxJISidBJRJX.webp'],
@@ -226,7 +226,7 @@ const products = [
   {
     name: 'Urban Sneakers',
     description: 'Minimalist white leather sneakers',
-    price: 89.99,
+    price: 7499,
     discount: 10,
     category: 'accessories',
     images: ['https://files.manuscdn.com/user_upload_by_module/session_file/310519663537365120/GVniDUdqpFgIrVwg.jpeg'],
@@ -236,7 +236,7 @@ const products = [
   {
     name: 'Classic Leather Belt',
     description: 'Brown genuine leather belt',
-    price: 25.00,
+    price: 1999,
     discount: 0,
     category: 'accessories',
     images: ['https://files.manuscdn.com/user_upload_by_module/session_file/310519663537365120/jVTTvTurJXnIdKyh.jpeg'],
@@ -246,7 +246,7 @@ const products = [
   {
     name: 'Minimalist Wallet',
     description: 'Black slim leather cardholder',
-    price: 19.99,
+    price: 1599,
     discount: 0,
     category: 'accessories',
     images: ['https://files.manuscdn.com/user_upload_by_module/session_file/310519663537365120/EwVQdBRVijqdGqXx.jpeg'],
@@ -256,7 +256,7 @@ const products = [
   {
     name: 'Aviator Sunglasses',
     description: 'Gold frame dark lens aviators',
-    price: 45.00,
+    price: 3799,
     discount: 20,
     category: 'accessories',
     images: ['https://files.manuscdn.com/user_upload_by_module/session_file/310519663537365120/zIMzRFkrNUtDKtGF.jpeg'],

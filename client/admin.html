@@ -84,7 +84,7 @@
       tbody.innerHTML = products.map(p => `
         <tr>
           <td>${p.name}</td>
-          <td>$${p.price}</td>
+          <td>₹${p.price}</td>
           <td>${p.category}</td>
           <td>
             <button class="btn" onclick="deleteProduct('${p.id ?? p._id}')">Delete</button>

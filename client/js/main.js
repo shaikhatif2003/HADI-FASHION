@@ -176,7 +176,7 @@ const renderProducts = (products, container) => {
         <div class="product-category">${p.category}</div>
         <div class="product-name">${p.name}</div>
         <div class="price-container">
-          <div class="product-price">$${p.price}</div>
+          <div class="product-price">₹${p.price}</div>
           ${p.discount > 0 ? `<div class="discount-badge">${p.discount}% OFF</div>` : ''}
         </div>
       </div>
