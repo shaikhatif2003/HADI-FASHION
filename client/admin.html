@@ -16,11 +16,12 @@
       <ul class="nav-links">
         <li><a href="index.html">Home</a></li>
         <li><a href="shop.html">Shop</a></li>
-        <li><a href="cart.html">Cart</a></li>
-        <li id="auth-link" style="display:none;"><a href="login.html">Login</a></li>
-        <li id="profile-link"><a href="profile.html">Profile</a></li>
+        <li><a href="admin.html" class="nav-active">Admin</a></li>
       </ul>
       <div class="icons">
+        <div class="icon" onclick="window.location.href='shop.html'">
+          <i class="ri-store-2-line"></i>
+        </div>
         <div class="icon" onclick="window.location.href='cart.html'">
           <i class="ri-shopping-bag-line"></i> <span id="cart-count" class="cart-count">0</span>
         </div>
@@ -28,43 +29,64 @@
     </nav>
   </header>
 
-  <section class="section" style="max-width:1100px; margin:2rem auto;">
-    <h2 class="section-title">Admin Panel - Products</h2>
-
-    <!-- Admin Access Check -->
-    <div id="admin-denied" style="display:none; text-align:center; padding:3rem;">
-      <i class="ri-lock-line" style="font-size:3rem; color:var(--gold);"></i>
-      <h3 style="margin-top:1rem;">Access Denied</h3>
-      <p style="color:var(--text-light);">You need admin privileges to access this page.</p>
-      <a href="index.html" class="btn" style="margin-top:1rem; display:inline-block;">Go Home</a>
+  <section class="lite-admin-page">
+    <div class="lite-admin-header">
+      <span>Light Admin Backend</span>
+      <h1>Manage Products</h1>
+      <p>Add clothing products here and they will appear on the shop frontend immediately.</p>
     </div>
 
-    <div id="admin-content" style="display:none;">
-      <div class="admin-form">
-        <h3>Add Product</h3>
+    <div id="admin-login" class="lite-admin-card admin-key-card">
+      <i class="ri-key-2-line"></i>
+      <h2>Admin Access</h2>
+      <p>Enter your backend admin key to continue.</p>
+      <form id="admin-key-form">
+        <div class="form-group">
+          <label for="admin-key">Admin Key</label>
+          <input type="password" id="admin-key" placeholder="Enter ADMIN_KEY" required>
+        </div>
+        <button type="submit" class="btn">Open Admin</button>
+      </form>
+    </div>
+
+    <div id="admin-content" class="lite-admin-layout" style="display:none;">
+      <div class="lite-admin-card">
+        <div class="admin-card-heading">
+          <div>
+            <span class="admin-eyebrow">Catalog</span>
+            <h2>Add Product</h2>
+          </div>
+          <button type="button" class="admin-ghost-btn" onclick="logoutAdmin()">
+            <i class="ri-lock-line"></i> Lock
+          </button>
+        </div>
+
         <form id="add-product-form">
           <div class="form-group">
-            <label>Name</label>
-            <input type="text" id="p-name" required>
+            <label for="p-name">Name</label>
+            <input type="text" id="p-name" placeholder="Premium Linen Shirt" required>
           </div>
+
           <div class="form-group">
-            <label>Description</label>
-            <textarea id="p-desc" rows="2" placeholder="Product description"></textarea>
+            <label for="p-desc">Description</label>
+            <textarea id="p-desc" rows="3" placeholder="Short product description"></textarea>
           </div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+
+          <div class="admin-form-grid">
             <div class="form-group">
-              <label>Price (₹)</label>
+              <label for="p-price">Price (INR)</label>
               <input type="number" id="p-price" step="1" min="1" required>
             </div>
             <div class="form-group">
-              <label>Discount (%)</label>
+              <label for="p-discount">Discount (%)</label>
               <input type="number" id="p-discount" step="1" min="0" max="99" value="0">
             </div>
           </div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+
+          <div class="admin-form-grid">
             <div class="form-group">
-              <label>Category</label>
-              <select id="p-category">
+              <label for="p-category">Category</label>
+              <select id="p-category" required>
                 <option value="shirts">Shirts</option>
                 <option value="jeans">Jeans</option>
                 <option value="t-shirts">T-Shirts</option>
@@ -76,41 +98,42 @@
               </select>
             </div>
             <div class="form-group">
-              <label>Stock</label>
+              <label for="p-stock">Stock</label>
               <input type="number" id="p-stock" min="0" value="10">
             </div>
           </div>
-          <div class="form-group">
-            <label>Sizes (comma separated)</label>
-            <input type="text" id="p-sizes" placeholder="S,M,L,XL">
-          </div>
-          <div class="form-group">
-            <label>Image URL</label>
-            <input type="url" id="p-image" placeholder="https://...">
-          </div>
-          <button type="submit" class="btn">Add Product</button>
-        </form>
 
-        <h3 style="margin-top:2rem;">All Products (<span id="product-total-count">0</span>)</h3>
-        <table class="admin-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Price</th>
-              <th>Discount</th>
-              <th>Category</th>
-              <th>Stock</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="admin-products">
-          </tbody>
-        </table>
+          <div class="form-group">
+            <label for="p-sizes">Sizes</label>
+            <input type="text" id="p-sizes" placeholder="S, M, L, XL">
+          </div>
+
+          <div class="form-group">
+            <label for="p-images">Image URLs</label>
+            <textarea id="p-images" rows="4" placeholder="Paste one or more image URLs, separated by commas or new lines"></textarea>
+          </div>
+
+          <button type="submit" class="btn admin-submit-btn">
+            <i class="ri-add-line"></i> Add Product
+          </button>
+        </form>
+      </div>
+
+      <div class="lite-admin-card admin-list-card">
+        <div class="admin-card-heading">
+          <div>
+            <span class="admin-eyebrow">Live Products</span>
+            <h2>All Products (<span id="product-total-count">0</span>)</h2>
+          </div>
+          <button type="button" class="admin-ghost-btn" onclick="loadAdminProducts()">
+            <i class="ri-refresh-line"></i> Refresh
+          </button>
+        </div>
+        <div id="admin-products" class="admin-products-list"></div>
       </div>
     </div>
   </section>
 
-  <!-- Footer -->
   <footer class="cart-footer">
     <p>&copy; 2026 HADI Fashion. All rights reserved.</p>
   </footer>
@@ -121,72 +144,115 @@
   <script src="js/firebase-config.js"></script>
   <script src="js/main.js"></script>
   <script>
+    const ADMIN_KEY_STORAGE = 'hadi_admin_key';
+    const getAdminKey = () => localStorage.getItem(ADMIN_KEY_STORAGE) || '';
+    const setAdminKey = (key) => localStorage.setItem(ADMIN_KEY_STORAGE, key);
+    const adminHeaders = () => ({ 'x-admin-key': getAdminKey() });
+
+    const parseList = (value) => value
+      .split(/[\n,]+/)
+      .map(item => item.trim())
+      .filter(Boolean);
+
+    const showAdmin = () => {
+      document.getElementById('admin-login').style.display = 'none';
+      document.getElementById('admin-content').style.display = 'grid';
+    };
+
+    const showLogin = () => {
+      document.getElementById('admin-content').style.display = 'none';
+      document.getElementById('admin-login').style.display = 'block';
+    };
+
+    document.getElementById('admin-key-form').onsubmit = async (e) => {
+      e.preventDefault();
+      setAdminKey(document.getElementById('admin-key').value.trim());
+      await loadAdminProducts(true);
+    };
+
     document.getElementById('add-product-form').onsubmit = async (e) => {
       e.preventDefault();
-      const imageUrl = document.getElementById('p-image').value.trim();
-      const result = await HADI.apiCall('/products', {
+
+      const result = await HADI.apiCall('/products/admin-lite', {
         method: 'POST',
-        headers: { 'x-auth-token': HADI.getToken() },
+        headers: adminHeaders(),
         body: JSON.stringify({
           name: document.getElementById('p-name').value,
           description: document.getElementById('p-desc').value,
           price: parseFloat(document.getElementById('p-price').value),
           discount: parseInt(document.getElementById('p-discount').value) || 0,
           category: document.getElementById('p-category').value,
-          sizes: document.getElementById('p-sizes').value.split(',').map(s => s.trim()).filter(Boolean),
-          images: imageUrl ? [imageUrl] : [],
+          sizes: parseList(document.getElementById('p-sizes').value),
+          images: parseList(document.getElementById('p-images').value),
           stock: parseInt(document.getElementById('p-stock').value) || 0
         })
       });
+
       if (result) {
-        loadAdminProducts();
         e.target.reset();
+        document.getElementById('p-discount').value = '0';
+        document.getElementById('p-stock').value = '10';
+        await loadAdminProducts();
       }
     };
 
-    const loadAdminProducts = async () => {
-      const products = await HADI.apiCall('/products');
-      if (!products) return;
+    window.loadAdminProducts = async (fromLogin = false) => {
+      const products = await HADI.apiCall('/products/admin-lite/all', {
+        headers: adminHeaders()
+      }, { silent: fromLogin });
 
+      if (!products) {
+        if (fromLogin) alert('Invalid admin key.');
+        showLogin();
+        return;
+      }
+
+      showAdmin();
       document.getElementById('product-total-count').textContent = products.length;
-      const tbody = document.getElementById('admin-products');
-      tbody.innerHTML = products.map(p => `
-        <tr>
-          <td>${p.name}</td>
-          <td>₹${HADI.formatPrice(p.price)}</td>
-          <td>${p.discount > 0 ? p.discount + '%' : '—'}</td>
-          <td>${p.category}</td>
-          <td>${p.stock}</td>
-          <td>
-            <button class="btn" style="padding:0.3rem 0.8rem; font-size:0.8rem;" onclick="deleteProduct('${p.id ?? p._id}')">Delete</button>
-          </td>
-        </tr>
+      const list = document.getElementById('admin-products');
+
+      if (products.length === 0) {
+        list.innerHTML = '<p class="admin-empty">No products yet.</p>';
+        return;
+      }
+
+      list.innerHTML = products.map(p => `
+        <article class="admin-product-row">
+          <div class="admin-product-thumb">
+            ${p.images?.[0] ? `<img src="${p.images[0]}" alt="${p.name}">` : `<span>${(p.category || 'P').charAt(0).toUpperCase()}</span>`}
+          </div>
+          <div class="admin-product-meta">
+            <strong>${p.name}</strong>
+            <span>${p.category} · Stock ${p.stock}</span>
+          </div>
+          <div class="admin-product-price">
+            <strong>₹${HADI.formatPrice(HADI.calcDiscountedPrice(p.price, p.discount))}</strong>
+            ${p.discount > 0 ? `<span>${p.discount}% off</span>` : '<span>No discount</span>'}
+          </div>
+          <button class="admin-delete-btn" onclick="deleteProduct('${p.id ?? p._id}')" aria-label="Delete ${p.name}">
+            <i class="ri-delete-bin-line"></i>
+          </button>
+        </article>
       `).join('');
     };
 
     window.deleteProduct = async (id) => {
-      if (confirm('Delete this product? This cannot be undone.')) {
-        await HADI.apiCall(`/products/${id}`, { method: 'DELETE', headers: { 'x-auth-token': HADI.getToken() } });
-        loadAdminProducts();
-      }
+      if (!confirm('Delete this product? This cannot be undone.')) return;
+      const result = await HADI.apiCall(`/products/admin-lite/${id}`, {
+        method: 'DELETE',
+        headers: adminHeaders()
+      });
+      if (result) loadAdminProducts();
+    };
+
+    window.logoutAdmin = () => {
+      localStorage.removeItem(ADMIN_KEY_STORAGE);
+      showLogin();
     };
 
     window.addEventListener('load', async () => {
       await HADI.waitForAuth();
-      
-      const user = HADI.getUser();
-      if (!user) {
-        window.location.href = 'login.html';
-        return;
-      }
-
-      if (user.role !== 'admin') {
-        document.getElementById('admin-denied').style.display = 'block';
-        return;
-      }
-
-      document.getElementById('admin-content').style.display = 'block';
-      loadAdminProducts();
+      if (getAdminKey()) loadAdminProducts();
       HADI.updateCartCount();
     });
   </script>

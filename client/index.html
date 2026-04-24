@@ -29,53 +29,42 @@
     </nav>
   </header>
 
-  <!-- Hero Slider -->
-  <section class="hero-slider-section">
-    <div class="hero-slider" id="heroSlider">
-      
-      <!-- Slide 1 -->
-      <div class="slide active">
-        <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1516257984-b1b4d707412e?q=80&w=2000&auto=format&fit=crop');"></div>
-        <div class="slide-content">
-          <span class="slide-subtitle">New Collection 2026</span>
-          <h2>Style for Every Man</h2>
-          <p>Premium Quality Mens Fashion at Affordable Prices.</p>
-          <a href="shop.html" class="btn slide-btn">Shop Now <i class="ri-arrow-right-line"></i></a>
-        </div>
-      </div>
-      
-      <!-- Slide 2 -->
-      <div class="slide">
-        <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1542272604-787c3835535d?q=80&w=2000&auto=format&fit=crop');"></div>
-        <div class="slide-content">
-          <span class="slide-subtitle">Denim Essentials</span>
-          <h2>The Perfect Fit</h2>
-          <p>Discover our range of premium comfort denim.</p>
-          <a href="shop.html?category=jeans" class="btn slide-btn">Shop Denim <i class="ri-arrow-right-line"></i></a>
-        </div>
-      </div>
-      
-      <!-- Slide 3 -->
-      <div class="slide">
-        <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?q=80&w=2000&auto=format&fit=crop');"></div>
-        <div class="slide-content">
-          <span class="slide-subtitle">Summer Ready</span>
-          <h2>Elevate Your Basics</h2>
-          <p>Breathable shirts and tees for the modern gentleman.</p>
-          <a href="shop.html?category=shirts" class="btn slide-btn">Explore Shirts <i class="ri-arrow-right-line"></i></a>
+  <!-- Editorial Hero -->
+  <section class="editorial-hero">
+    <div class="editorial-hero-bg"></div>
+    <div class="editorial-hero-inner">
+      <div class="editorial-copy">
+        <span class="editorial-kicker">New 2026 wardrobe drop</span>
+        <h1>HADI Fashion</h1>
+        <p>Sharp shirts, relaxed denim, clean layers, and everyday essentials selected for modern menswear.</p>
+        <div class="editorial-actions">
+          <a href="shop.html" class="btn editorial-primary">Shop Collection <i class="ri-arrow-right-line"></i></a>
+          <a href="shop.html?category=shirts" class="editorial-secondary">Explore Shirts</a>
         </div>
       </div>
 
-      <!-- Controls -->
-      <button class="slider-btn prev-btn" onclick="moveSlide(-1)"><i class="ri-arrow-left-s-line"></i></button>
-      <button class="slider-btn next-btn" onclick="moveSlide(1)"><i class="ri-arrow-right-s-line"></i></button>
-      
-      <!-- Indicators -->
-      <div class="slider-dots" id="sliderDots">
-        <span class="dot active" onclick="goToSlide(0)"></span>
-        <span class="dot" onclick="goToSlide(1)"></span>
-        <span class="dot" onclick="goToSlide(2)"></span>
+      <div class="editorial-showcase" aria-label="Featured clothing categories">
+        <a href="shop.html?category=jackets" class="showcase-tile showcase-tall">
+          <img src="https://images.unsplash.com/photo-1551028719-00167b16eac5?q=80&w=900&auto=format&fit=crop" alt="Men's jacket">
+          <span>Outerwear</span>
+        </a>
+        <a href="shop.html?category=jeans" class="showcase-tile">
+          <img src="https://images.unsplash.com/photo-1542272604-787c3835535d?q=80&w=900&auto=format&fit=crop" alt="Men's jeans">
+          <span>Denim</span>
+        </a>
+        <a href="shop.html?category=t-shirts" class="showcase-tile">
+          <img src="https://images.unsplash.com/photo-1562157873-818bc0726f68?q=80&w=900&auto=format&fit=crop" alt="Men's t-shirt">
+          <span>Essentials</span>
+        </a>
       </div>
+    </div>
+
+    <div class="editorial-category-strip">
+      <a href="shop.html?category=shirts">Shirts</a>
+      <a href="shop.html?category=t-shirts">T-Shirts</a>
+      <a href="shop.html?category=jeans">Jeans</a>
+      <a href="shop.html?category=jackets">Jackets</a>
+      <a href="shop.html?category=night suits">Night Suits</a>
     </div>
   </section>
 
@@ -167,40 +156,6 @@
   <script src="js/firebase-config.js"></script>
   <script src="js/main.js"></script>
   <script>
-    // --- Slider Logic ---
-    let currentSlide = 0;
-    const slides = document.querySelectorAll('.slide');
-    const dots = document.querySelectorAll('.dot');
-    let slideInterval;
-
-    const showSlide = (index) => {
-      slides.forEach(s => s.classList.remove('active'));
-      dots.forEach(d => d.classList.remove('active'));
-      
-      if (index >= slides.length) currentSlide = 0;
-      if (index < 0) currentSlide = slides.length - 1;
-      
-      slides[currentSlide].classList.add('active');
-      dots[currentSlide].classList.add('active');
-    };
-
-    window.moveSlide = (step) => {
-      currentSlide += step;
-      showSlide(currentSlide);
-      resetInterval();
-    };
-
-    window.goToSlide = (index) => {
-      currentSlide = index;
-      showSlide(currentSlide);
-      resetInterval();
-    };
-
-    const resetInterval = () => {
-      clearInterval(slideInterval);
-      slideInterval = setInterval(() => moveSlide(1), 5000);
-    };
-
     // --- Loading Skeletons ---
     const showSkeletons = (container) => {
       container.innerHTML = Array(4).fill(0).map(() => `
@@ -216,9 +171,6 @@
     };
 
     window.addEventListener('load', async () => {
-      // Start Slider
-      resetInterval();
-
       // Auth UI Setup
       await HADI.waitForAuth();
       const user = HADI.getUser();

@@ -26,7 +26,7 @@ app.get('/api', (req, res) => res.send('HADI Fashion API running'));
 initDb()
   .then(() => {
     console.log('Firebase connected');
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    app.listen(PORT, () => console.log(`http://localhost:${PORT} --> HADI Fashion API running`));
   })
   .catch((err) => {
     console.error('Firebase error:', err.message);
