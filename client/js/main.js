@@ -4,23 +4,47 @@ const API_BASE = '/api';
 
 // DOM Elements
 const cartCountEl = document.getElementById('cart-count');
-const loadingEl = document.getElementById('loading');
+let activeLoaderRequests = 0;
+let loaderHideTimer = null;
 let resolveAuthReady = () => {};
 const authReady = new Promise((resolve) => {
   resolveAuthReady = resolve;
 });
 
 // Utils
+const getLoadingEl = () => document.getElementById('loading');
+
 const showLoading = () => {
-  if (loadingEl) loadingEl.style.display = 'block';
+  const loadingEl = getLoadingEl();
+  activeLoaderRequests += 1;
+  if (!loadingEl) return;
+
+  if (loaderHideTimer) {
+    clearTimeout(loaderHideTimer);
+    loaderHideTimer = null;
+  }
+
+  loadingEl.style.display = 'block';
+  loadingEl.setAttribute('aria-busy', 'true');
 };
 
 const hideLoading = () => {
-  if (loadingEl) loadingEl.style.display = 'none';
+  const loadingEl = getLoadingEl();
+  activeLoaderRequests = Math.max(0, activeLoaderRequests - 1);
+  if (!loadingEl || activeLoaderRequests > 0) return;
+
+  loaderHideTimer = setTimeout(() => {
+    if (activeLoaderRequests === 0) {
+      loadingEl.style.display = 'none';
+      loadingEl.setAttribute('aria-busy', 'false');
+    }
+  }, 120);
 };
 
 const apiCall = async (endpoint, options = {}, config = {}, retryCount = 0) => {
-  showLoading();
+  const shouldShowLoader = config.showLoader !== false;
+  if (shouldShowLoader) showLoading();
+
   try {
     const { headers: optHeaders, ...restOptions } = options;
     const res = await fetch(`${API_BASE}${endpoint}`, {
@@ -30,8 +54,7 @@ const apiCall = async (endpoint, options = {}, config = {}, retryCount = 0) => {
         ...optHeaders
       }
     });
-    hideLoading();
-    
+
     // Handle 401 - token expired, try to refresh
     if (res.status === 401 && retryCount === 0) {
       console.warn('Got 401, attempting token refresh...');
@@ -61,14 +84,24 @@ const apiCall = async (endpoint, options = {}, config = {}, retryCount = 0) => {
         throw new Error(errorText || `HTTP ${res.status}`);
       }
     }
+
+    if (res.status === 204) return null;
+
+    const contentType = res.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+      const text = await res.text();
+      return text ? { message: text } : null;
+    }
+
     return res.json();
   } catch (err) {
-    hideLoading();
     console.error(err);
     if (!config.silent) {
       alert(err.message);
     }
     return null;
+  } finally {
+    if (shouldShowLoader) hideLoading();
   }
 };
 

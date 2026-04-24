@@ -8,6 +8,8 @@
   <link href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css" rel="stylesheet">
 </head>
 <body>
+  <div id="loading" class="loading" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); z-index:9999;"></div>
+
   <header>
     <nav class="nav-container">
       <a href="index.html" class="logo">HADI Fashion</a>
@@ -167,35 +169,57 @@
         return alert('Please select a size');
       }
 
-      if (!HADI.getUser()) {
-        const localCart = JSON.parse(localStorage.getItem('cart') || '[]');
-        const existingItem = localCart.find(item => (item.productId?.id ?? item.productId?._id) === productId && item.size === selectedSize);
+      const btn = document.querySelector('.add-cart');
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> Adding...';
 
-        if (existingItem) {
-          existingItem.quantity += 1;
+      try {
+        if (!HADI.getUser()) {
+          const localCart = JSON.parse(localStorage.getItem('cart') || '[]');
+          const existingItem = localCart.find(item => (item.productId?.id ?? item.productId?._id) === productId && item.size === selectedSize);
+
+          if (existingItem) {
+            existingItem.quantity += 1;
+          } else {
+            localCart.push({
+              id: `local-${Date.now()}`,
+              _id: `local-${Date.now()}`,
+              quantity: 1,
+              size: selectedSize,
+              productId: currentProduct.id ? currentProduct : { ...currentProduct, id: productId, _id: productId }
+            });
+          }
+
+          localStorage.setItem('cart', JSON.stringify(localCart));
+          HADI.updateCartCount();
         } else {
-          localCart.push({
-            id: `local-${Date.now()}`,
-            _id: `local-${Date.now()}`,
-            quantity: 1,
-            size: selectedSize,
-            productId: currentProduct.id ? currentProduct : { ...currentProduct, id: productId, _id: productId }
+          await HADI.apiCall('/cart', {
+            method: 'POST',
+            headers: { 'x-auth-token': HADI.getToken() },
+            body: JSON.stringify({ productId, size: selectedSize })
           });
+          HADI.updateCartCount();
         }
 
-        localStorage.setItem('cart', JSON.stringify(localCart));
-        HADI.updateCartCount();
-        alert('Added to cart!');
-        return;
+        btn.innerHTML = '<i class="ri-check-line"></i> Added to Cart!';
+        btn.style.backgroundColor = '#2ecc71';
+        btn.style.color = 'white';
+        btn.style.borderColor = '#2ecc71';
+        
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+          btn.style.backgroundColor = '';
+          btn.style.color = '';
+          btn.style.borderColor = '';
+        }, 2000);
+      } catch (err) {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+        console.error(err);
+        alert('Failed to add to cart.');
       }
-      
-      await HADI.apiCall('/cart', {
-        method: 'POST',
-        headers: { 'x-auth-token': HADI.getToken() },
-        body: JSON.stringify({ productId, size: selectedSize })
-      });
-      HADI.updateCartCount();
-      alert('Added to cart!');
     };
 
     window.changeImage = (index) => {
