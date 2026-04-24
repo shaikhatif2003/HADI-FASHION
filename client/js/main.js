@@ -164,24 +164,40 @@ const initFirebaseAuthSync = () => {
 };
 
 // Product rendering
+const calcDiscountedPrice = (price, discount) => {
+  if (!discount || discount <= 0) return price;
+  return Math.round(price - (price * discount / 100));
+};
+
+const formatPrice = (price) => {
+  return price.toLocaleString('en-IN');
+};
+
 const renderProducts = (products, container) => {
-  container.innerHTML = products.map(p => `
-    <div class="product-card" onclick="HADI.goToProduct('${p.id ?? p._id}')">
+  container.innerHTML = products.map(p => {
+    const hasDiscount = p.discount > 0;
+    const finalPrice = calcDiscountedPrice(p.price, p.discount);
+    const isOutOfStock = p.stock !== undefined && p.stock <= 0;
+
+    return `
+    <div class="product-card ${isOutOfStock ? 'out-of-stock' : ''}" onclick="HADI.goToProduct('${p.id ?? p._id}')">
       <div class="product-image">
         ${p.images && p.images.length > 0 
           ? `<img src="${p.images[0]}" alt="${p.name}" style="width:100%; height:100%; object-fit:cover;">`
-          : p.category.charAt(0).toUpperCase()}
+          : `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:3rem;color:var(--gold);font-weight:700;">${(p.category || 'P').charAt(0).toUpperCase()}</div>`}
+        ${hasDiscount ? `<span class="discount-badge">${p.discount}% OFF</span>` : ''}
+        ${isOutOfStock ? `<span class="stock-badge">Out of Stock</span>` : ''}
       </div>
       <div class="product-info">
         <div class="product-category">${p.category}</div>
         <div class="product-name">${p.name}</div>
         <div class="price-container">
-          <div class="product-price">₹${p.price}</div>
-          ${p.discount > 0 ? `<div class="discount-badge">${p.discount}% OFF</div>` : ''}
+          <div class="product-price">₹${formatPrice(finalPrice)}</div>
+          ${hasDiscount ? `<div class="product-price-original">₹${formatPrice(p.price)}</div>` : ''}
         </div>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 };
 
 // Init on load
@@ -198,6 +214,8 @@ window.HADI = {
   goToProduct,
   waitForAuth: () => authReady,
   updateCartCount,
-  renderProducts
+  renderProducts,
+  calcDiscountedPrice,
+  formatPrice
 };
 

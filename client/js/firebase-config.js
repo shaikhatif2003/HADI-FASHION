@@ -1,13 +1,14 @@
 let firebaseReady = false;
 
   const firebaseConfig = {
-    apiKey: "AIzaSyCigBtLmEYpbDOKgKQ7n3HwCImHGIkz2Ig",
-    authDomain: "bcanotes-ecbac.firebaseapp.com",
-    projectId: "bcanotes-ecbac",
-    storageBucket: "bcanotes-ecbac.firebasestorage.app",
-    messagingSenderId: "329332716671",
-    appId: "1:329332716671:web:3294c49b8743dcb0487b4a",
-    measurementId: "G-7YTCMT1LCR"
+    apiKey: "AIzaSyDQoLPv834S2TbBw6pM5aECLRribzgnNdU",
+    authDomain: "projects-6c49a.firebaseapp.com",
+    databaseURL: "https://projects-6c49a-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "projects-6c49a",
+    storageBucket: "projects-6c49a.firebasestorage.app",
+    messagingSenderId: "770504051582",
+    appId: "1:770504051582:web:5f957e6aa8a93b63ea012f",
+    measurementId: "G-BGPNPLJYSV"
   };
 
 if (window.firebase && !window.firebase.apps.length) {

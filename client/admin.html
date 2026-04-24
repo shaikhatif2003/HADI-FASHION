@@ -3,58 +3,117 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin - HADI Fashion</title>
+  <title>Admin Panel - HADI Fashion</title>
   <link rel="stylesheet" href="css/style.css">
   <link href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css" rel="stylesheet">
 </head>
 <body>
-  <header><!-- Header --></header>
+  <div id="loading" class="loading" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); z-index:9999;"></div>
 
-  <section class="section">
+  <header>
+    <nav class="nav-container">
+      <a href="index.html" class="logo">HADI Fashion</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="shop.html">Shop</a></li>
+        <li><a href="cart.html">Cart</a></li>
+        <li id="auth-link" style="display:none;"><a href="login.html">Login</a></li>
+        <li id="profile-link"><a href="profile.html">Profile</a></li>
+      </ul>
+      <div class="icons">
+        <div class="icon" onclick="window.location.href='cart.html'">
+          <i class="ri-shopping-bag-line"></i> <span id="cart-count" class="cart-count">0</span>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <section class="section" style="max-width:1100px; margin:2rem auto;">
     <h2 class="section-title">Admin Panel - Products</h2>
-    <div class="admin-form">
-      <h3>Add Product</h3>
-      <form id="add-product-form">
-        <div class="form-group">
-          <label>Name</label>
-          <input type="text" id="p-name" required>
-        </div>
-        <div class="form-group">
-          <label>Price</label>
-          <input type="number" id="p-price" step="0.01" required>
-        </div>
-        <div class="form-group">
-          <label>Category</label>
-          <select id="p-category">
-            <option value="shirts">Shirts</option>
-            <option value="jeans">Jeans</option>
-            <option value="t-shirts">T-Shirts</option>
-            <option value="trousers">Trousers</option>
-            <option value="lowers">Lowers</option>
-            <option value="night suits">Night Suits</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Sizes (comma separated)</label>
-          <input type="text" id="p-sizes" placeholder="S,M,L,XL">
-        </div>
-        <button type="submit" class="btn">Add Product</button>
-      </form>
 
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Price</th>
-            <th>Category</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="admin-products">
-        </tbody>
-      </table>
+    <!-- Admin Access Check -->
+    <div id="admin-denied" style="display:none; text-align:center; padding:3rem;">
+      <i class="ri-lock-line" style="font-size:3rem; color:var(--gold);"></i>
+      <h3 style="margin-top:1rem;">Access Denied</h3>
+      <p style="color:var(--text-light);">You need admin privileges to access this page.</p>
+      <a href="index.html" class="btn" style="margin-top:1rem; display:inline-block;">Go Home</a>
+    </div>
+
+    <div id="admin-content" style="display:none;">
+      <div class="admin-form">
+        <h3>Add Product</h3>
+        <form id="add-product-form">
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" id="p-name" required>
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="p-desc" rows="2" placeholder="Product description"></textarea>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+            <div class="form-group">
+              <label>Price (₹)</label>
+              <input type="number" id="p-price" step="1" min="1" required>
+            </div>
+            <div class="form-group">
+              <label>Discount (%)</label>
+              <input type="number" id="p-discount" step="1" min="0" max="99" value="0">
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+            <div class="form-group">
+              <label>Category</label>
+              <select id="p-category">
+                <option value="shirts">Shirts</option>
+                <option value="jeans">Jeans</option>
+                <option value="t-shirts">T-Shirts</option>
+                <option value="trousers">Trousers</option>
+                <option value="jackets">Jackets</option>
+                <option value="lowers">Lowers</option>
+                <option value="night suits">Night Suits</option>
+                <option value="accessories">Accessories</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Stock</label>
+              <input type="number" id="p-stock" min="0" value="10">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Sizes (comma separated)</label>
+            <input type="text" id="p-sizes" placeholder="S,M,L,XL">
+          </div>
+          <div class="form-group">
+            <label>Image URL</label>
+            <input type="url" id="p-image" placeholder="https://...">
+          </div>
+          <button type="submit" class="btn">Add Product</button>
+        </form>
+
+        <h3 style="margin-top:2rem;">All Products (<span id="product-total-count">0</span>)</h3>
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Price</th>
+              <th>Discount</th>
+              <th>Category</th>
+              <th>Stock</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="admin-products">
+          </tbody>
+        </table>
+      </div>
     </div>
   </section>
+
+  <!-- Footer -->
+  <footer class="cart-footer">
+    <p>&copy; 2026 HADI Fashion. All rights reserved.</p>
+  </footer>
 
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
@@ -64,37 +123,49 @@
   <script>
     document.getElementById('add-product-form').onsubmit = async (e) => {
       e.preventDefault();
-      await HADI.apiCall('/products', {
+      const imageUrl = document.getElementById('p-image').value.trim();
+      const result = await HADI.apiCall('/products', {
         method: 'POST',
         headers: { 'x-auth-token': HADI.getToken() },
         body: JSON.stringify({
           name: document.getElementById('p-name').value,
+          description: document.getElementById('p-desc').value,
           price: parseFloat(document.getElementById('p-price').value),
+          discount: parseInt(document.getElementById('p-discount').value) || 0,
           category: document.getElementById('p-category').value,
-          sizes: document.getElementById('p-sizes').value.split(',')
+          sizes: document.getElementById('p-sizes').value.split(',').map(s => s.trim()).filter(Boolean),
+          images: imageUrl ? [imageUrl] : [],
+          stock: parseInt(document.getElementById('p-stock').value) || 0
         })
       });
-      loadAdminProducts();
-      e.target.reset();
+      if (result) {
+        loadAdminProducts();
+        e.target.reset();
+      }
     };
 
     const loadAdminProducts = async () => {
       const products = await HADI.apiCall('/products');
+      if (!products) return;
+
+      document.getElementById('product-total-count').textContent = products.length;
       const tbody = document.getElementById('admin-products');
       tbody.innerHTML = products.map(p => `
         <tr>
           <td>${p.name}</td>
-          <td>₹${p.price}</td>
+          <td>₹${HADI.formatPrice(p.price)}</td>
+          <td>${p.discount > 0 ? p.discount + '%' : '—'}</td>
           <td>${p.category}</td>
+          <td>${p.stock}</td>
           <td>
-            <button class="btn" onclick="deleteProduct('${p.id ?? p._id}')">Delete</button>
+            <button class="btn" style="padding:0.3rem 0.8rem; font-size:0.8rem;" onclick="deleteProduct('${p.id ?? p._id}')">Delete</button>
           </td>
         </tr>
       `).join('');
     };
 
     window.deleteProduct = async (id) => {
-      if (confirm('Delete product?')) {
+      if (confirm('Delete this product? This cannot be undone.')) {
         await HADI.apiCall(`/products/${id}`, { method: 'DELETE', headers: { 'x-auth-token': HADI.getToken() } });
         loadAdminProducts();
       }
@@ -102,10 +173,22 @@
 
     window.addEventListener('load', async () => {
       await HADI.waitForAuth();
-      if (!HADI.getUser()) window.location.href = 'login.html';
+      
+      const user = HADI.getUser();
+      if (!user) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      if (user.role !== 'admin') {
+        document.getElementById('admin-denied').style.display = 'block';
+        return;
+      }
+
+      document.getElementById('admin-content').style.display = 'block';
       loadAdminProducts();
+      HADI.updateCartCount();
     });
   </script>
 </body>
 </html>
-

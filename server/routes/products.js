@@ -6,9 +6,9 @@ const router = express.Router();
 // Get all products (with filter/search/sort)
 router.get('/', async (req, res) => {
   try {
-    const { category, search, sort, page = 1, limit = 12 } = req.query;
+    const { category, search, sort, page, limit } = req.query;
     const currentPage = Number(page) || 1;
-    const pageSize = Number(limit) || 12;
+    const pageSize = Number(limit) || 50;
     const offset = (currentPage - 1) * pageSize;
 
     const snapshot = await db.collection('products').get();
@@ -20,10 +20,20 @@ router.get('/', async (req, res) => {
 
     if (search) {
       const needle = String(search).toLowerCase();
-      products = products.filter((product) => product.name.toLowerCase().includes(needle));
+      products = products.filter((product) =>
+        product.name.toLowerCase().includes(needle) ||
+        product.description.toLowerCase().includes(needle) ||
+        product.category.toLowerCase().includes(needle)
+      );
     }
 
-    products.sort((a, b) => (sort === 'price_low' ? a.price - b.price : b.price - a.price));
+    if (sort === 'price_low') {
+      products.sort((a, b) => a.price - b.price);
+    } else if (sort === '-price') {
+      products.sort((a, b) => b.price - a.price);
+    }
+    // else: no sort param => keep default Firestore order
+
     res.json(products.slice(offset, offset + pageSize));
   } catch (err) {
     res.status(500).json({ msg: err.message });
