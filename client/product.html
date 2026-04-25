@@ -8,6 +8,8 @@
   <link href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css" rel="stylesheet">
 </head>
 <body>
+  <div id="loading" class="loading" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); z-index:9999;"></div>
+
   <header>
     <nav class="nav-container">
       <a href="index.html" class="logo">HADI Fashion</a>
@@ -30,7 +32,7 @@
   <section class="product-detail">
     <div class="detail-images">
       <div class="main-image" id="main-image-container">
-        <img id="main-image" src="" alt="Product Image" style="width:100%; height:100%; object-fit:cover; display:none; border-radius:20px;">
+        <img id="main-image" src="" alt="Product Image" style="display:none;">
         <div id="image-placeholder" style="font-size:6rem; color:white;">S</div>
       </div>
       <div class="thumbs" id="thumbs"></div>
@@ -38,7 +40,9 @@
     <div class="detail-info">
       <h1 id="product-name">Product Name</h1>
       <div class="detail-price" id="product-price">₹0</div>
+      <p id="stock-info" style="display:none; font-weight:600; font-size:0.9rem; margin:0.5rem 0;"></p>
       <p id="product-desc">Description</p>
+      <div id="product-feedback" class="product-feedback" role="status" aria-live="polite"></div>
       <div>
         <label>Sizes:</label>
         <div class="sizes" id="sizes"></div>
@@ -72,12 +76,56 @@
       renderProduct();
     };
 
+    const setProductFeedback = (message, type = 'info') => {
+      const feedback = document.getElementById('product-feedback');
+      if (!feedback) return;
+      const icon = type === 'success' ? 'ri-checkbox-circle-line' : type === 'error' ? 'ri-error-warning-line' : 'ri-information-line';
+      feedback.className = `product-feedback show ${type}`;
+      feedback.innerHTML = `<i class="${icon}"></i><span>${message}</span>`;
+    };
+
+    const clearProductFeedback = () => {
+      const feedback = document.getElementById('product-feedback');
+      if (!feedback) return;
+      feedback.className = 'product-feedback';
+      feedback.innerHTML = '';
+    };
+
     const renderProduct = () => {
       if (!currentProduct) return;
       
       document.getElementById('product-name').textContent = currentProduct.name;
-      document.getElementById('product-price').textContent = `₹${currentProduct.price}`;
+      
+      // Price with discount
+      const priceEl = document.getElementById('product-price');
+      const hasDiscount = currentProduct.discount > 0;
+      const finalPrice = HADI.calcDiscountedPrice(currentProduct.price, currentProduct.discount);
+      
+      if (hasDiscount) {
+        priceEl.innerHTML = `₹${HADI.formatPrice(finalPrice)} <span style="font-size:0.55em; text-decoration:line-through; color:var(--text-light); margin-left:10px;">₹${HADI.formatPrice(currentProduct.price)}</span> <span style="font-size:0.45em; color:#2ecc71; font-weight:600; margin-left:8px;">${currentProduct.discount}% OFF</span>`;
+      } else {
+        priceEl.textContent = `₹${HADI.formatPrice(currentProduct.price)}`;
+      }
+      
       document.getElementById('product-desc').textContent = currentProduct.description;
+      
+      // Stock info
+      const stockInfo = document.getElementById('stock-info');
+      if (stockInfo) {
+        if (currentProduct.stock > 0 && currentProduct.stock <= 5) {
+          stockInfo.textContent = `Only ${currentProduct.stock} left in stock!`;
+          stockInfo.style.color = '#e74c3c';
+          stockInfo.style.display = 'block';
+        } else if (currentProduct.stock <= 0) {
+          stockInfo.textContent = 'Out of Stock';
+          stockInfo.style.color = '#e74c3c';
+          stockInfo.style.display = 'block';
+        } else {
+          stockInfo.textContent = 'In Stock';
+          stockInfo.style.color = '#2ecc71';
+          stockInfo.style.display = 'block';
+        }
+      }
       
       // Images
       const mainImg = document.getElementById('main-image');
@@ -115,6 +163,9 @@
           <p>${r.comment}</p>
         </div>
       `).join('') || '<p>No reviews yet</p>';
+
+      // Update page title
+      document.title = `${currentProduct.name} - HADI Fashion`;
     };
 
     const selectSize = (size) => {
@@ -128,41 +179,67 @@
       const productId = currentProduct.id ?? currentProduct._id ?? urlParams.get('id');
 
       if (!productId) {
-        return alert('Could not identify product. Please refresh the page and try again.');
-      }
-      if (!selectedSize) {
-        return alert('Please select a size');
-      }
-
-      if (!HADI.getUser()) {
-        const localCart = JSON.parse(localStorage.getItem('cart') || '[]');
-        const existingItem = localCart.find(item => (item.productId?.id ?? item.productId?._id) === productId && item.size === selectedSize);
-
-        if (existingItem) {
-          existingItem.quantity += 1;
-        } else {
-          localCart.push({
-            id: `local-${Date.now()}`,
-            _id: `local-${Date.now()}`,
-            quantity: 1,
-            size: selectedSize,
-            productId: currentProduct.id ? currentProduct : { ...currentProduct, id: productId, _id: productId }
-          });
-        }
-
-        localStorage.setItem('cart', JSON.stringify(localCart));
-        HADI.updateCartCount();
-        alert('Added to cart!');
+        setProductFeedback('Could not identify product. Please refresh the page and try again.', 'error');
         return;
       }
-      
-      await HADI.apiCall('/cart', {
-        method: 'POST',
-        headers: { 'x-auth-token': HADI.getToken() },
-        body: JSON.stringify({ productId, size: selectedSize })
-      });
-      HADI.updateCartCount();
-      alert('Added to cart!');
+      if (!selectedSize) {
+        setProductFeedback('Select a size before adding this item to cart.', 'error');
+        return;
+      }
+
+      clearProductFeedback();
+      const btn = document.querySelector('.add-cart');
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> Adding...';
+
+      try {
+        if (!HADI.getUser()) {
+          const localCart = JSON.parse(localStorage.getItem('cart') || '[]');
+          const existingItem = localCart.find(item => (item.productId?.id ?? item.productId?._id) === productId && item.size === selectedSize);
+
+          if (existingItem) {
+            existingItem.quantity += 1;
+          } else {
+            localCart.push({
+              id: `local-${Date.now()}`,
+              _id: `local-${Date.now()}`,
+              quantity: 1,
+              size: selectedSize,
+              productId: currentProduct.id ? currentProduct : { ...currentProduct, id: productId, _id: productId }
+            });
+          }
+
+          localStorage.setItem('cart', JSON.stringify(localCart));
+          HADI.updateCartCount();
+        } else {
+          await HADI.apiCall('/cart', {
+            method: 'POST',
+            headers: { 'x-auth-token': HADI.getToken() },
+            body: JSON.stringify({ productId, size: selectedSize })
+          });
+          HADI.updateCartCount();
+        }
+
+        btn.innerHTML = '<i class="ri-check-line"></i> Added to Cart!';
+        btn.style.backgroundColor = '#2ecc71';
+        btn.style.color = 'white';
+        btn.style.borderColor = '#2ecc71';
+        setProductFeedback('Added to cart. You can keep shopping or review your bag.', 'success');
+        
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+          btn.style.backgroundColor = '';
+          btn.style.color = '';
+          btn.style.borderColor = '';
+        }, 2000);
+      } catch (err) {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+        console.error(err);
+        setProductFeedback('Failed to add to cart. Please try again.', 'error');
+      }
     };
 
     window.changeImage = (index) => {

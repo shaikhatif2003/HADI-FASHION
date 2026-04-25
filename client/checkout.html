@@ -4,42 +4,79 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Checkout - HADI Fashion</title>
+  <meta name="description" content="Complete your purchase at HADI Fashion. Secure checkout for premium men's clothing.">
   <link rel="stylesheet" href="css/style.css">
   <link href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css" rel="stylesheet">
 </head>
 <body>
-  <header><!-- Header --></header>
+  <div id="loading" class="loading" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); z-index:9999;"></div>
 
-  <section class="section">
+  <header>
+    <nav class="nav-container">
+      <a href="index.html" class="logo">HADI Fashion</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="shop.html">Shop</a></li>
+        <li><a href="cart.html">Cart</a></li>
+        <li id="auth-link"><a href="login.html">Login</a></li>
+        <li id="profile-link" style="display:none;"><a href="profile.html">Profile</a></li>
+      </ul>
+      <div class="icons">
+        <div class="icon"><i class="ri-heart-line"></i></div>
+        <div class="icon" onclick="window.location.href='cart.html'">
+          <i class="ri-shopping-bag-line"></i> <span id="cart-count" class="cart-count">0</span>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <section class="section" style="max-width:700px; margin:2rem auto; padding:2rem;">
     <h2 class="section-title">Checkout</h2>
+
+    <!-- Order Summary -->
+    <div id="checkout-summary" style="background:var(--card-bg, #fff); border-radius:16px; padding:1.5rem; margin-bottom:2rem; border:1px solid rgba(0,0,0,0.08);">
+      <h3 style="margin-bottom:1rem;">Order Summary</h3>
+      <div id="checkout-items" style="font-size:0.9rem; color:var(--text-light);"></div>
+      <div style="border-top:1px solid rgba(0,0,0,0.1); margin-top:1rem; padding-top:1rem; display:flex; justify-content:space-between; font-weight:700; font-size:1.1rem;">
+        <span>Total (incl. 18% GST)</span>
+        <span id="checkout-total">₹0.00</span>
+      </div>
+    </div>
+
     <form id="checkout-form" class="checkout-form">
       <h3>Shipping Address</h3>
       <div class="form-group">
         <label>Street</label>
-        <input type="text" id="street" required>
+        <input type="text" id="street" required placeholder="e.g. 123 MG Road">
       </div>
       <div class="form-group">
         <label>City</label>
-        <input type="text" id="city" required>
+        <input type="text" id="city" required placeholder="e.g. Mumbai">
       </div>
       <div class="form-group">
-        <label>ZIP</label>
-        <input type="text" id="zip" required>
+        <label>PIN Code</label>
+        <input type="text" id="zip" required placeholder="e.g. 400001" pattern="[0-9]{6}" title="Enter a 6-digit PIN code">
       </div>
       <div class="form-group">
         <label>Country</label>
-        <input type="text" id="country" value="USA" required>
+        <input type="text" id="country" value="India" required>
       </div>
       <div class="form-group">
         <label>Payment Method</label>
         <select id="payment-method" required>
-          <option value="card">Credit Card (Mock)</option>
-          <option value="paypal">PayPal</option>
+          <option value="cod">Cash on Delivery</option>
+          <option value="upi">UPI</option>
+          <option value="card">Credit/Debit Card (Mock)</option>
         </select>
       </div>
-      <button type="submit" class="btn" style="width:100%;">Place Order</button>
+      <button type="submit" class="btn" style="width:100%; margin-top:1rem;">Place Order</button>
     </form>
   </section>
+
+  <!-- Footer -->
+  <footer class="cart-footer">
+    <p>&copy; 2026 HADI Fashion. All rights reserved.</p>
+  </footer>
 
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
@@ -47,10 +84,50 @@
   <script src="js/firebase-config.js"></script>
   <script src="js/main.js"></script>
   <script>
+    const loadCheckoutSummary = async () => {
+      const user = HADI.getUser();
+      let cart;
+
+      if (user && HADI.getToken()) {
+        cart = await HADI.apiCall('/cart', {
+          headers: { 'x-auth-token': HADI.getToken() }
+        }, { silent: true });
+      }
+
+      if (!cart) {
+        cart = { items: JSON.parse(localStorage.getItem('cart') || '[]') };
+      }
+
+      const itemsEl = document.getElementById('checkout-items');
+      const totalEl = document.getElementById('checkout-total');
+
+      if (!cart.items || cart.items.length === 0) {
+        itemsEl.innerHTML = '<p>Your cart is empty. <a href="shop.html">Continue shopping</a></p>';
+        return;
+      }
+
+      itemsEl.innerHTML = cart.items.map(item => {
+        const product = item.productId || {};
+        const price = product.price || 0;
+        return `<div style="display:flex; justify-content:space-between; padding:0.4rem 0;">
+          <span>${product.name || 'Product'} × ${item.quantity}${item.size ? ` (${item.size})` : ''}</span>
+          <span>₹${(price * item.quantity).toLocaleString('en-IN')}</span>
+        </div>`;
+      }).join('');
+
+      const subtotal = cart.items.reduce((sum, item) => sum + ((item.productId?.price || 0) * (item.quantity || 0)), 0);
+      const total = subtotal + (subtotal * 0.18);
+      totalEl.textContent = `₹${total.toFixed(2)}`;
+    };
+
     document.getElementById('checkout-form').onsubmit = async (e) => {
       e.preventDefault();
       if (!HADI.getUser()) return window.location.href = 'login.html';
       
+      const btn = e.target.querySelector('button[type="submit"]');
+      btn.disabled = true;
+      btn.textContent = 'Placing Order...';
+
       const orderData = {
         address: {
           street: document.getElementById('street').value,
@@ -61,16 +138,34 @@
         paymentMethod: document.getElementById('payment-method').value
       };
       
-      await HADI.apiCall('/orders', {
+      const result = await HADI.apiCall('/orders', {
         method: 'POST',
         headers: { 'x-auth-token': HADI.getToken(), 'Content-Type': 'application/json' },
         body: JSON.stringify(orderData)
       });
       
-      alert('Order placed successfully!');
-      window.location.href = 'confirmation.html';
+      if (result) {
+        window.location.href = 'confirmation.html';
+      } else {
+        btn.disabled = false;
+        btn.textContent = 'Place Order';
+      }
     };
+
+    window.addEventListener('load', async () => {
+      await HADI.waitForAuth();
+      
+      if (!HADI.getUser()) {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      await loadCheckoutSummary();
+      HADI.updateCartCount();
+
+      document.getElementById('auth-link').style.display = 'none';
+      document.getElementById('profile-link').style.display = 'block';
+    });
   </script>
 </body>
 </html>
-

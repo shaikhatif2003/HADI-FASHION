@@ -4,23 +4,47 @@ const API_BASE = '/api';
 
 // DOM Elements
 const cartCountEl = document.getElementById('cart-count');
-const loadingEl = document.getElementById('loading');
+let activeLoaderRequests = 0;
+let loaderHideTimer = null;
 let resolveAuthReady = () => {};
 const authReady = new Promise((resolve) => {
   resolveAuthReady = resolve;
 });
 
 // Utils
+const getLoadingEl = () => document.getElementById('loading');
+
 const showLoading = () => {
-  if (loadingEl) loadingEl.style.display = 'block';
+  const loadingEl = getLoadingEl();
+  activeLoaderRequests += 1;
+  if (!loadingEl) return;
+
+  if (loaderHideTimer) {
+    clearTimeout(loaderHideTimer);
+    loaderHideTimer = null;
+  }
+
+  loadingEl.style.display = 'block';
+  loadingEl.setAttribute('aria-busy', 'true');
 };
 
 const hideLoading = () => {
-  if (loadingEl) loadingEl.style.display = 'none';
+  const loadingEl = getLoadingEl();
+  activeLoaderRequests = Math.max(0, activeLoaderRequests - 1);
+  if (!loadingEl || activeLoaderRequests > 0) return;
+
+  loaderHideTimer = setTimeout(() => {
+    if (activeLoaderRequests === 0) {
+      loadingEl.style.display = 'none';
+      loadingEl.setAttribute('aria-busy', 'false');
+    }
+  }, 120);
 };
 
 const apiCall = async (endpoint, options = {}, config = {}, retryCount = 0) => {
-  showLoading();
+  const shouldShowLoader = config.showLoader !== false;
+  if (shouldShowLoader) showLoading();
+
   try {
     const { headers: optHeaders, ...restOptions } = options;
     const res = await fetch(`${API_BASE}${endpoint}`, {
@@ -30,8 +54,7 @@ const apiCall = async (endpoint, options = {}, config = {}, retryCount = 0) => {
         ...optHeaders
       }
     });
-    hideLoading();
-    
+
     // Handle 401 - token expired, try to refresh
     if (res.status === 401 && retryCount === 0) {
       console.warn('Got 401, attempting token refresh...');
@@ -61,14 +84,24 @@ const apiCall = async (endpoint, options = {}, config = {}, retryCount = 0) => {
         throw new Error(errorText || `HTTP ${res.status}`);
       }
     }
+
+    if (res.status === 204) return null;
+
+    const contentType = res.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+      const text = await res.text();
+      return text ? { message: text } : null;
+    }
+
     return res.json();
   } catch (err) {
-    hideLoading();
     console.error(err);
     if (!config.silent) {
       alert(err.message);
     }
     return null;
+  } finally {
+    if (shouldShowLoader) hideLoading();
   }
 };
 
@@ -163,25 +196,51 @@ const initFirebaseAuthSync = () => {
   });
 };
 
+
 // Product rendering
+const calcDiscountedPrice = (price, discount) => {
+  if (!discount || discount <= 0) return price;
+  return Math.round(price - (price * discount / 100));
+};
+const formatPrice = (price) => {
+  return price.toLocaleString('en-IN');
+};
+
 const renderProducts = (products, container) => {
-  container.innerHTML = products.map(p => `
-    <div class="product-card" onclick="HADI.goToProduct('${p.id ?? p._id}')">
+  container.innerHTML = products.map(p => {
+    const hasDiscount = p.discount > 0;
+    const finalPrice = calcDiscountedPrice(p.price, p.discount);
+    const isOutOfStock = p.stock !== undefined && p.stock <= 0;
+
+    // Use category as brand, default to 'HADI FASHION'
+    const brandName = (p.category || 'HADI FASHION').toUpperCase();
+
+    return `
+    <div class="product-card ${isOutOfStock ? 'out-of-stock' : ''}" onclick="HADI.goToProduct('${p.id ?? p._id}')">
       <div class="product-image">
         ${p.images && p.images.length > 0 
-          ? `<img src="${p.images[0]}" alt="${p.name}" style="width:100%; height:100%; object-fit:cover;">`
-          : p.category.charAt(0).toUpperCase()}
-      </div>
-      <div class="product-info">
-        <div class="product-category">${p.category}</div>
-        <div class="product-name">${p.name}</div>
-        <div class="price-container">
-          <div class="product-price">₹${p.price}</div>
-          ${p.discount > 0 ? `<div class="discount-badge">${p.discount}% OFF</div>` : ''}
+          ? `<img src="${p.images[0]}" alt="${p.name}">`
+          : `<div class="placeholder-img">${brandName.charAt(0)}</div>`}
+        <div class="heart-icon-wrapper" onclick="event.stopPropagation(); this.classList.toggle('active')">
+          <i class="ri-heart-line"></i>
+          <i class="ri-heart-fill"></i>
         </div>
       </div>
-    </div>
-  `).join('');
+      <div class="product-info">
+        <div class="product-brand">${brandName}</div>
+        <div class="product-name-row">
+          <div class="product-name" title="${p.name}">${p.name}</div>
+          <div class="assured-badge"><img src="https://static-assets-web.flixcart.com/fk-p-linchpin-web/fk-cp-zion/img/fa_62673a.png" alt="Assured"></div>
+        </div>
+        <div class="price-container">
+          <div class="product-price">₹${formatPrice(finalPrice)}</div>
+          ${hasDiscount ? `<div class="product-price-original">₹${formatPrice(p.price)}</div>` : ''}
+          ${hasDiscount ? `<div class="product-discount">${p.discount}% off</div>` : ''}
+        </div>
+        ${hasDiscount ? `<div class="hot-deal-badge">Hot Deal</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
 };
 
 // Init on load
@@ -198,6 +257,7 @@ window.HADI = {
   goToProduct,
   waitForAuth: () => authReady,
   updateCartCount,
-  renderProducts
+  renderProducts,
+  calcDiscountedPrice,
+  formatPrice
 };
-

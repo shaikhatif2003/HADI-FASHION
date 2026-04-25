@@ -46,7 +46,7 @@
         
         <div class="filter-search">
           <i class="ri-search-line"></i>
-          <input type="text" id="search-input" placeholder="Search products..." oninput="filterProducts()">
+          <input type="text" id="search-input" placeholder="Search products...">
         </div>
 
         <div class="filter-selectors">
@@ -58,8 +58,10 @@
               <option value="jeans">Jeans</option>
               <option value="t-shirts">T-Shirts</option>
               <option value="trousers">Trousers</option>
+              <option value="jackets">Jackets</option>
               <option value="lowers">Lowers</option>
               <option value="night suits">Night Suits</option>
+              <option value="accessories">Accessories</option>
             </select>
             <i class="ri-arrow-down-s-line arrow-icon"></i>
           </div>
@@ -81,6 +83,14 @@
     <!-- Products Grid -->
     <div class="products-grid" id="shop-products">
       <!-- Loading Skeleton will be inserted here by default -->
+    </div>
+
+    <!-- Load More -->
+    <div id="load-more-container" style="display:none; text-align:center; padding:2rem 0;">
+      <button class="btn" id="load-more-btn" onclick="loadMore()" style="min-width:200px;">
+        Load More Products
+      </button>
+      <p id="product-count-info" style="margin-top:0.75rem; color:var(--text-light); font-size:0.9rem;"></p>
     </div>
     
     <!-- Empty State (hidden by default) -->
@@ -104,9 +114,14 @@
   <script src="js/main.js"></script>
   <script>
     let allProducts = [];
+    let displayedCount = 0;
+    const PAGE_SIZE = 12;
     let isInitialLoad = true;
     const container = document.getElementById('shop-products');
     const emptyState = document.getElementById('shop-empty-state');
+    const loadMoreContainer = document.getElementById('load-more-container');
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    const countInfo = document.getElementById('product-count-info');
 
     const showSkeletons = () => {
       container.innerHTML = Array(8).fill(0).map(() => `
@@ -136,7 +151,8 @@
       if (sort) params.append('sort', sort);
       
       const queryString = params.toString();
-      allProducts = await HADI.apiCall(`/products${queryString ? '?' + queryString : ''}`);
+      allProducts = await HADI.apiCall(`/products${queryString ? '?' + queryString : ''}`) || [];
+      displayedCount = 0;
       
       // Update URL silently
       const newUrl = window.location.pathname + (queryString ? '?' + queryString : '');
@@ -150,11 +166,40 @@
       if (!allProducts || allProducts.length === 0) {
         container.style.display = 'none';
         emptyState.style.display = 'flex';
+        loadMoreContainer.style.display = 'none';
       } else {
         container.style.display = 'grid';
         emptyState.style.display = 'none';
-        HADI.renderProducts(allProducts, container);
+        
+        // Show first batch
+        const batch = allProducts.slice(0, PAGE_SIZE);
+        displayedCount = batch.length;
+        HADI.renderProducts(batch, container);
+        updateLoadMore();
       }
+    };
+
+    const updateLoadMore = () => {
+      if (displayedCount < allProducts.length) {
+        loadMoreContainer.style.display = 'block';
+        countInfo.textContent = `Showing ${displayedCount} of ${allProducts.length} products`;
+      } else {
+        loadMoreContainer.style.display = allProducts.length > PAGE_SIZE ? 'block' : 'none';
+        countInfo.textContent = allProducts.length > 0 ? `Showing all ${allProducts.length} products` : '';
+        loadMoreBtn.style.display = displayedCount >= allProducts.length ? 'none' : 'inline-block';
+      }
+    };
+
+    window.loadMore = () => {
+      const nextBatch = allProducts.slice(displayedCount, displayedCount + PAGE_SIZE);
+      displayedCount += nextBatch.length;
+      
+      // Append new cards (don't re-render everything)
+      const tempDiv = document.createElement('div');
+      HADI.renderProducts(nextBatch, tempDiv);
+      container.insertAdjacentHTML('beforeend', tempDiv.innerHTML);
+      
+      updateLoadMore();
     };
 
     window.clearFilters = () => {
@@ -162,6 +207,13 @@
       document.getElementById('search-input').value = '';
       document.getElementById('sort-filter').value = '';
       filterProducts();
+    };
+
+    // Debounce search input
+    let searchTimer;
+    document.getElementById('search-input').oninput = () => {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(filterProducts, 300);
     };
 
     window.addEventListener('load', async () => {

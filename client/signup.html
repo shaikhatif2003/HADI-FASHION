@@ -8,25 +8,76 @@
   <link href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css" rel="stylesheet">
 </head>
 <body>
-  <header><!-- Header --></header>
+  <div id="loading" class="loading" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); z-index:9999;"></div>
 
-  <form id="signup-form" class="login-form">
-    <h2>Create Account</h2>
-    <div class="form-group">
-      <label>Name</label>
-      <input type="text" id="signup-name" required>
-    </div>
-    <div class="form-group">
-      <label>Email</label>
-      <input type="email" id="signup-email" required>
-    </div>
-    <div class="form-group">
-      <label>Password</label>
-      <input type="password" id="signup-password" required>
-    </div>
-    <button type="submit" class="btn" style="width:100%;">Sign Up</button>
-    <p style="text-align:center; margin-top:1rem;">Have account? <a href="login.html">Login</a></p>
-  </form>
+  <header>
+    <nav class="nav-container">
+      <a href="index.html" class="logo">HADI Fashion</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="shop.html">Shop</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="auth-page">
+    <section class="auth-panel">
+      <div class="auth-copy">
+        <span class="auth-kicker">New here</span>
+        <h1>Create your HADI account.</h1>
+        <p>Checkout faster, keep your cart synced, and track every order from one profile.</p>
+      </div>
+
+      <form id="signup-form" class="auth-card" novalidate>
+        <div class="auth-card-header">
+          <h2>Create Account</h2>
+          <p>Enter your details to start shopping.</p>
+        </div>
+
+        <div id="auth-feedback" class="auth-feedback" role="status" aria-live="polite"></div>
+
+        <div class="form-group auth-field">
+          <label for="signup-name">Name</label>
+          <div class="input-shell">
+            <i class="ri-user-line"></i>
+            <input type="text" id="signup-name" autocomplete="name" placeholder="Full name" required>
+          </div>
+          <small class="field-error" id="signup-name-error"></small>
+        </div>
+
+        <div class="form-group auth-field">
+          <label for="signup-email">Email</label>
+          <div class="input-shell">
+            <i class="ri-mail-line"></i>
+            <input type="email" id="signup-email" autocomplete="email" placeholder="you@example.com" required>
+          </div>
+          <small class="field-error" id="signup-email-error"></small>
+        </div>
+
+        <div class="form-group auth-field">
+          <label for="signup-password">Password</label>
+          <div class="input-shell">
+            <i class="ri-lock-line"></i>
+            <input type="password" id="signup-password" autocomplete="new-password" placeholder="At least 6 characters" required minlength="6">
+            <button type="button" class="password-toggle" data-toggle-password="signup-password" aria-label="Show password">
+              <i class="ri-eye-line"></i>
+            </button>
+          </div>
+          <div class="password-meter" id="password-meter" aria-hidden="true">
+            <span></span>
+          </div>
+          <small class="field-error" id="signup-password-error"></small>
+        </div>
+
+        <button type="submit" class="btn auth-submit">
+          <span>Create Account</span>
+          <i class="ri-arrow-right-line"></i>
+        </button>
+
+        <p class="auth-switch">Already have an account? <a href="login.html">Login</a></p>
+      </form>
+    </section>
+  </main>
 
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
